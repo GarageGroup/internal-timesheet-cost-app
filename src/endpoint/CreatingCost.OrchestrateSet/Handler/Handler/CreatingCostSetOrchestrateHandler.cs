@@ -23,7 +23,6 @@ internal sealed partial class CreatingCostSetOrchestrateHandler : ICreatingCostS
             {
                 CostPeriodId = costPeriodId,
                 SystemUserId = item.SystemUserId,
-                EmployeeName = item.EmployeeName,
                 Cost = item.EmployeeCost
             };
     }
@@ -33,8 +32,6 @@ internal sealed partial class CreatingCostSetOrchestrateHandler : ICreatingCostS
         public Guid CostPeriodId { get; init; }
 
         public Guid SystemUserId { get; init; }
-
-        public string? EmployeeName { get; init; }
 
         public decimal Cost { get; init; }
     }
