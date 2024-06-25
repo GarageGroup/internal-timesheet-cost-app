@@ -2,11 +2,6 @@
 
 namespace GarageGroup.Internal.Timesheet;
 
-internal sealed partial class ProjectCostSetDeleteHandler : IProjectCostSetDeleteHandler
+internal sealed partial class ProjectCostSetDeleteHandler(IDataverseApiClient dataverseApi) : IProjectCostSetDeleteHandler
 {
-    private readonly IDataverseApiClient dataverseApi;
-
-    internal ProjectCostSetDeleteHandler(IDataverseApiClient dataverseApi)
-        =>
-        this.dataverseApi = dataverseApi;
 }

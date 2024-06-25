@@ -13,13 +13,14 @@ partial class ProjectCostSetDeleteHandler
         =>
         AsyncPipeline.Pipe(
            input, cancellationToken)
-       .Pipe(
+        .Pipe(
            static @in => EmployeeProjectCostJson.BuildDataverseSetGetInput(@in.CostPeriodId, @in.MaxItems))
-       .PipeValue(
+        .PipeValue(
            dataverseApi.GetEntitySetAsync<EmployeeProjectCostJson>)
-       .ForwardValue(
-           DeleteEmployeeProjectCostsAsync,
-           static failure => failure.WithFailureCode(HandlerFailureCode.Transient));
+        .MapFailure(
+            static failure => failure.WithFailureCode(HandlerFailureCode.Transient))
+        .ForwardValue(
+           DeleteEmployeeProjectCostsAsync);
 
     private ValueTask<Result<ProjectCostSetDeleteOut, Failure<HandlerFailureCode>>> DeleteEmployeeProjectCostsAsync(
         DataverseEntitySetGetOut<EmployeeProjectCostJson> input, CancellationToken cancellationToken)

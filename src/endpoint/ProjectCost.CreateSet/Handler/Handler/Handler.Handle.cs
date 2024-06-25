@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GarageGroup.Infra;
@@ -34,8 +33,7 @@ partial class ProjectCostSetCreateHandler
                         DbTimesheet.BuildOwnerFilter(@in.SystemUserId),
                         DbTimesheet.BuildDateFilter(@in.CostPeriodId),
                     ]
-                },
-                GroupByFields = DbTimesheet.DefaultGroups
+                }
             })
         .PipeValue(
             sqlApi.QueryEntitySetOrFailureAsync<DbTimesheet>)
@@ -47,36 +45,6 @@ partial class ProjectCostSetCreateHandler
             ParallelOption)
         .MapSuccess(
             Unit.From);
-
-    private static Result<ProjectCostSetCreateIn, Failure<HandlerFailureCode>> ValidateInput(ProjectCostSetCreateIn? input)
-        =>
-        input is null ? Failure.Create(HandlerFailureCode.Persistent, "Input is null") : input;
-
-    private static FlatArray<EmployeeProjectCostJson> BuildEmployeeProjectCostJson(
-        ProjectCostSetCreateIn input, FlatArray<DbTimesheet> timesheets)
-    {
-        if (timesheets.IsEmpty)
-        {
-            return default;
-        }
-
-        var durationSum = timesheets.AsEnumerable().Sum(GetDuration);
-        return timesheets.Map(MapTimesheet);
-
-        static decimal GetDuration(DbTimesheet timesheet)
-            =>
-            timesheet.Duration;
-
-        EmployeeProjectCostJson MapTimesheet(DbTimesheet timesheet)
-            =>
-            new()
-            {
-                Cost = timesheet.Duration * input.EmployeeCost / durationSum,
-                EmployeeLookupValue = EmployeeProjectCostJson.BuildEmployeeLookupValue(input.SystemUserId),
-                PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
-                ExtensionData = EmployeeProjectCostJson.BuildExtensionData(timesheet.ProjectId, timesheet.RegardingObjectTypeCode)
-            };
-    }
 
     private ValueTask<Result<Unit, Failure<HandlerFailureCode>>> CreateProjectCostAsync(
         EmployeeProjectCostJson input, CancellationToken cancellationToken)
