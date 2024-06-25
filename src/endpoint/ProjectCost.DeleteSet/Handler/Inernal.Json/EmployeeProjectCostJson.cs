@@ -10,6 +10,10 @@ internal readonly record struct EmployeeProjectCostJson
         =
         "gg_employee_project_costs";
 
+    private const string EmployeeProjectCostIdFieldName
+        =
+        "gg_employee_project_costid";
+
     internal static DataverseEntityDeleteIn BuildDataverseDeleteInput(Guid id)
         =>
         new(
@@ -20,12 +24,12 @@ internal readonly record struct EmployeeProjectCostJson
         =>
         new(
             entityPluralName: EntityPluralName,
-            selectFields: default,
-            filter: $"_gg_period_id_value qe '{periodId}'",
+            selectFields: [EmployeeProjectCostIdFieldName],
+            filter: $"_gg_period_id_value eq '{periodId}'",
             expandFields: default,
             orderBy: default,
             top: top);
 
-    [JsonPropertyName("gg_employee_project_costid")]
+    [JsonPropertyName(EmployeeProjectCostIdFieldName)]
     public Guid Id { get; init; }
 }
