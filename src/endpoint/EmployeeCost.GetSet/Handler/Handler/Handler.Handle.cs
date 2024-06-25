@@ -10,21 +10,26 @@ partial class EmployeeCostSetGetHandler
     public ValueTask<Result<EmployeeCostSetGetOut, Failure<HandlerFailureCode>>> HandleAsync(
         EmployeeCostSetGetIn input, CancellationToken cancellationToken)
         =>
-        new(
-            result: new EmployeeCostSetGetOut
+        AsyncPipeline.Pipe(
+            input, cancellationToken)
+        .Pipe(
+            static @in => DbEmployeeCost.QueryAll with
             {
-                EmployeeCostItems =
-                [
-                    new(Guid.NewGuid(), "Employee First", 1000),
-                    new(Guid.NewGuid(), "Employee Second", 1500),
-                    new(Guid.NewGuid(), "Employee Third", 1300),
-                    new(Guid.NewGuid(), "Employee Fourth", 2000),
-                    new(Guid.NewGuid(), "Employee Fifth", 2100),
-                    new(Guid.NewGuid(), "Employee Sixth", 800),
-                    new(Guid.NewGuid(), "Employee Seventh", 1000),
-                    new(Guid.NewGuid(), "Employee Eights", 3000),
-                    new(Guid.NewGuid(), "Employee Ninth", 250),
-                    new(Guid.NewGuid(), "Employee Tenth", 2570)
-                ]
-            });
+                Filter = DbEmployeeCost.BuildDefaultFilter(@in.CostPeriodId)
+            })
+        .PipeValue(
+            sqlApi.QueryEntitySetOrFailureAsync<DbEmployeeCost>)
+        .Map(
+            @out => new EmployeeCostSetGetOut
+            {
+                EmployeeCostItems = @out.Map(MapEmployeeCost)
+            },
+            static failure => failure.WithFailureCode(HandlerFailureCode.Transient));
+
+    private static EmployeeCostItem MapEmployeeCost(DbEmployeeCost dbEmployeeCost)
+        =>
+        new(
+            systemUserId: dbEmployeeCost.UserId,
+            employeeName: dbEmployeeCost.UserFullName,
+            employeeCost: dbEmployeeCost.Cost);
 }

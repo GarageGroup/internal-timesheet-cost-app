@@ -4,6 +4,13 @@ namespace GarageGroup.Internal.Timesheet;
 
 internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreateHandler
 {
+    private static readonly PipelineParallelOption ParallelOption
+        =
+        new()
+        {
+            DegreeOfParallelism = 4
+        };
+
     private readonly ISqlQueryEntitySetSupplier sqlApi;
 
     private readonly IDataverseEntityCreateSupplier dataverseApi;
