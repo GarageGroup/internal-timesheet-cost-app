@@ -30,6 +30,5 @@ partial class EmployeeCostSetGetHandler
         =>
         new(
             systemUserId: dbEmployeeCost.UserId,
-            employeeName: dbEmployeeCost.UserFullName,
             employeeCost: dbEmployeeCost.Cost);
 }

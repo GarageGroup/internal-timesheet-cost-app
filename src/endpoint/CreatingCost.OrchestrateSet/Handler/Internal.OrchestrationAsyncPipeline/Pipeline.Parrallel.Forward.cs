@@ -8,22 +8,19 @@ namespace GarageGroup.Internal.Timesheet;
 
 partial class OrchestrationAsyncPipeline
 {
-    internal static AsyncPipeline<FlatArray<TOut>, Failure<HandlerFailureCode>> ForwardParallel<TIn, TOut>(
+    internal static AsyncPipeline<Unit, Failure<HandlerFailureCode>> ForwardParallel<TIn>(
         this AsyncPipeline<FlatArray<TIn>, Failure<HandlerFailureCode>> pipeline,
-        Func<TIn, CancellationToken, Task<Result<TOut, Failure<HandlerFailureCode>>>> forward)
+        Func<TIn, CancellationToken, Task<Result<Unit, Failure<HandlerFailureCode>>>> forward)
     {
         return pipeline.Forward(InnerForwardAsync);
 
-        async Task<Result<FlatArray<TOut>, Failure<HandlerFailureCode>>> InnerForwardAsync(
+        async Task<Result<Unit, Failure<HandlerFailureCode>>> InnerForwardAsync(
             FlatArray<TIn> inputs, CancellationToken cancellationToken)
         {
             if (inputs.IsEmpty)
             {
-                return Result.Success<FlatArray<TOut>>(default);
+                return Result.Success<Unit>(default);
             }
-
-            var builder = FlatArray<TOut>.Builder.OfLength(inputs.Length);
-            var index = 0;
 
             foreach (var chunk in inputs.SplitIntoChunks())
             {
@@ -33,14 +30,12 @@ partial class OrchestrationAsyncPipeline
                     {
                         return result.FailureOrThrow();
                     }
-
-                    builder[index++] = result.SuccessOrThrow();
                 }
             }
 
-            return builder.MoveToFlatArray();
+            return Result.Success<Unit>(default);
 
-            Task<Result<TOut, Failure<HandlerFailureCode>>> InnerInvokeAsync(TIn input)
+            Task<Result<Unit, Failure<HandlerFailureCode>>> InnerInvokeAsync(TIn input)
                 =>
                 forward.Invoke(input, cancellationToken);
         }

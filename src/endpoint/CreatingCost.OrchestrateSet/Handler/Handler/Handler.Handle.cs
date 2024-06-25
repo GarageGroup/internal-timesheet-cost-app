@@ -7,7 +7,7 @@ namespace GarageGroup.Internal.Timesheet;
 
 partial class CreatingCostSetOrchestrateHandler
 {
-    public ValueTask<Result<CreatingCostSetOrchestrateOut, Failure<HandlerFailureCode>>> HandleAsync(
+    public ValueTask<Result<Unit, Failure<HandlerFailureCode>>> HandleAsync(
         CreatingCostSetOrchestrateIn input, CancellationToken cancellationToken)
         =>
         OrchestrationAsyncPipeline.Pipe(
@@ -16,12 +16,7 @@ partial class CreatingCostSetOrchestrateHandler
             DeleteProjectCostsAsync,
             GetEmployeeCostsAsync)
         .ForwardParallel(
-            CreateProjectCostsAsync)
-        .MapSuccess(
-            static costs => new CreatingCostSetOrchestrateOut
-            {
-                EmployeeCosts = costs
-            });
+            CreateProjectCostsAsync);
 
     private Task<Result<FlatArray<EmployeeCost>, Failure<HandlerFailureCode>>> GetEmployeeCostsAsync(
         CreatingCostSetOrchestrateIn input, CancellationToken cancellationToken)
@@ -37,7 +32,7 @@ partial class CreatingCostSetOrchestrateHandler
         .MapSuccess(
             @out => MapEmployeeCosts(input.CostPeriodId, @out.Value.EmployeeCostItems));
 
-    private Task<Result<CreatingCostItem, Failure<HandlerFailureCode>>> CreateProjectCostsAsync(
+    private Task<Result<Unit, Failure<HandlerFailureCode>>> CreateProjectCostsAsync(
         EmployeeCost input, CancellationToken cancellationToken)
         =>
         OrchestrationAsyncPipeline.Pipe(
@@ -50,9 +45,7 @@ partial class CreatingCostSetOrchestrateHandler
                     systemUserId: @in.SystemUserId,
                     employeeCost: @in.Cost)))
         .PipeValue(
-            orchestrationActivityApi.CallActivityAsync)
-        .MapSuccess(
-            _ => new CreatingCostItem(input.EmployeeName, true));
+            orchestrationActivityApi.CallActivityAsync);
 
     private async Task<Result<Unit, Failure<HandlerFailureCode>>> DeleteProjectCostsAsync(
         CreatingCostSetOrchestrateIn input, CancellationToken cancellationToken)

@@ -8,9 +8,6 @@ partial record class DbEmployeeCost
     [DbSelect(All, AliasName, $"{AliasName}.gg_cost")]
     public decimal Cost { get; init; }
 
-    [DbSelect(All, UserAlias, $"{UserAlias}.fullname")]
-    public string? UserFullName { get; init; }
-
     [DbSelect(All, UserAlias, $"{UserAlias}.{SystemUserIdFieldName}")]
     public Guid UserId { get; init; }
 }
