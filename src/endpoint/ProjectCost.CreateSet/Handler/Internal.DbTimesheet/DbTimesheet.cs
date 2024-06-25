@@ -10,8 +10,4 @@ internal sealed partial record class DbTimesheet : IDbEntity<DbTimesheet>
     private const string AliasName = "t";
 
     private const string PeriodAliasName = "p";
-
-    private const string RegardingObjectIdFieldName = "regardingobjectid";
-
-    private const string RegardingObjectTypeCodeFieldName = "regardingobjecttypecode";
 }

@@ -2,11 +2,6 @@
 
 namespace GarageGroup.Internal.Timesheet;
 
-internal sealed partial class EmployeeCostSetGetHandler : IEmployeeCostSetGetHandler
+internal sealed partial class EmployeeCostSetGetHandler(ISqlQueryEntitySetSupplier sqlApi) : IEmployeeCostSetGetHandler
 {
-    private readonly ISqlQueryEntitySetSupplier sqlApi;
-
-    internal EmployeeCostSetGetHandler(ISqlQueryEntitySetSupplier sqlApi)
-        =>
-        this.sqlApi = sqlApi;
 }
