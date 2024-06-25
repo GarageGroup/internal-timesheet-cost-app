@@ -15,16 +15,16 @@ partial class EmployeeCostSetGetHandler
             {
                 EmployeeCostItems =
                 [
-                    new(Guid.NewGuid(), "Employee First", 1000),
-                    new(Guid.NewGuid(), "Employee Second", 1500),
-                    new(Guid.NewGuid(), "Employee Third", 1300),
-                    new(Guid.NewGuid(), "Employee Fourth", 2000),
-                    new(Guid.NewGuid(), "Employee Fifth", 2100),
-                    new(Guid.NewGuid(), "Employee Sixth", 800),
-                    new(Guid.NewGuid(), "Employee Seventh", 1000),
-                    new(Guid.NewGuid(), "Employee Eights", 3000),
-                    new(Guid.NewGuid(), "Employee Ninth", 250),
-                    new(Guid.NewGuid(), "Employee Tenth", 2570)
+                    new(Guid.NewGuid(), 1000),
+                    new(Guid.NewGuid(), 1500),
+                    new(Guid.NewGuid(), 1300),
+                    new(Guid.NewGuid(), 2000),
+                    new(Guid.NewGuid(), 2100),
+                    new(Guid.NewGuid(), 800),
+                    new(Guid.NewGuid(), 1000),
+                    new(Guid.NewGuid(), 3000),
+                    new(Guid.NewGuid(), 250),
+                    new(Guid.NewGuid(), 2570)
                 ]
             });
 }
