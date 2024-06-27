@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace GarageGroup.TestConsoleApp;
+namespace GarageGroup.Internal.Timesheet;
 
 internal sealed record class EmployeeProjectCostJson
 {
