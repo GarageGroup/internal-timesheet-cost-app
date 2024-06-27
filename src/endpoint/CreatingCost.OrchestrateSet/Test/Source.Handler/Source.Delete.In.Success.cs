@@ -7,7 +7,7 @@ namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateS
 using CostSetDeleteActivityIn = OrchestrationActivityCallIn<ProjectCostSetDeleteIn>;
 using CostSetDeleteActivityOut = OrchestrationActivityCallOut<ProjectCostSetDeleteOut>;
 
-internal static partial class CreatingCostOrchestrateHandlerSource
+partial class CreatingCostOrchestrateHandlerSource
 {
     public static TheoryData<CreatingCostSetOrchestrateIn, CostSetDeleteActivityIn, FlatArray<CostSetDeleteActivityOut>> InputDeleteSuccessTestData
         =>

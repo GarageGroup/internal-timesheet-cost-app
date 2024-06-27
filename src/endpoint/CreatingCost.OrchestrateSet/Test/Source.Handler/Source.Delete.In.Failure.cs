@@ -6,7 +6,7 @@ namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateS
 
 using ProjectCostSetDeleteActivityResult = Result<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>, Failure<HandlerFailureCode>>;
 
-internal static partial class CreatingCostOrchestrateHandlerSource
+partial class CreatingCostOrchestrateHandlerSource
 {
     public static TheoryData<FlatArray<ProjectCostSetDeleteActivityResult>, Failure<HandlerFailureCode>> InputDeleteFailureTestData
         =>
