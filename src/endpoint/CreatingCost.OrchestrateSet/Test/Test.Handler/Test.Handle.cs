@@ -11,18 +11,25 @@ partial class CreatingCostOrchestrateHandlerTest
 {
     [Theory]
     [MemberData(nameof(CreatingCostOrchestrateHandlerSource.InputDeleteSuccessTestData), MemberType = typeof(CreatingCostOrchestrateHandlerSource))]
-    internal static async Task HandleAsync_ExpectOrchestrationDeleteCalledTwice(
+    internal static async Task HandleAsync_ExpectOrchestrationDeleteCalledExactTimes(
         CreatingCostSetOrchestrateIn input, 
         OrchestrationActivityCallIn<ProjectCostSetDeleteIn> expectedInput, 
-        FlatArray<Result<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>, Failure<HandlerFailureCode>>> orchestrationOut)
+        FlatArray<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>> orchestrationOut)
     {
-        var mockOrchestration = BuildMockOrchestrationForDeleteTest(orchestrationOut);
+        var mockOrchestration = BuildMockOrchestrationForDeleteTest(orchestrationOut.Map(AsSuccess));
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
         _ = await handler.HandleAsync(input, cancellationToken);
 
-        mockOrchestration.Verify(f => f.CallActivityAsync<ProjectCostSetDeleteIn, ProjectCostSetDeleteOut>(expectedInput, cancellationToken), Times.Exactly(orchestrationOut.Length));
+        mockOrchestration.Verify(
+            f => f.CallActivityAsync<ProjectCostSetDeleteIn, ProjectCostSetDeleteOut>(expectedInput, cancellationToken),
+            Times.Exactly(orchestrationOut.Length));
+
+        static Result<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>, Failure<HandlerFailureCode>> AsSuccess(
+            OrchestrationActivityCallOut<ProjectCostSetDeleteOut> @out)
+            =>
+            Result.Success(@out);
     }
 
     [Theory]
@@ -41,25 +48,30 @@ partial class CreatingCostOrchestrateHandlerTest
     }
 
     [Fact]
-    public static async Task HandleAsync_OrchestrationDeleteResultIsSuccess_ExpectOrchestrationSetGetCalledOnce()
+    public static async Task HandleAsync_ExpectOrchestrationSetGetCalledOnce()
     {
         var mockOrchestration = BuildMockOrchestration(SomeDeleteOut, SomeSetGetOut, Result.Success<Unit>(default));
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
         var input = new CreatingCostSetOrchestrateIn(new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
+
         _ = await handler.HandleAsync(input, cancellationToken);
 
         var expectedInput = new OrchestrationActivityCallIn<EmployeeCostSetGetIn>(
-                activityName: "GetEmployeeCosts",
-                value: new(new("dfe086be-9513-48dd-915c-fa1a2c1f6d05")));
-        mockOrchestration.Verify(f => f.CallActivityAsync<EmployeeCostSetGetIn, EmployeeCostSetGetOut>(expectedInput, cancellationToken), Times.Once);
+            activityName: "GetEmployeeCosts",
+            value: new(new("dfe086be-9513-48dd-915c-fa1a2c1f6d05")));
+
+        mockOrchestration.Verify(
+            f => f.CallActivityAsync<EmployeeCostSetGetIn, EmployeeCostSetGetOut>(expectedInput, cancellationToken),
+            Times.Once);
     }
 
     [Theory]
     [InlineData(HandlerFailureCode.Transient)]
     [InlineData(HandlerFailureCode.Persistent)]
-    public static async Task HandleAsync_OrchestrationSetGetResultIsFailure_ExpectFailure(HandlerFailureCode sourceFailureCode)
+    public static async Task HandleAsync_OrchestrationSetGetResultIsFailure_ExpectFailure(
+        HandlerFailureCode sourceFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var orchestrationFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
@@ -77,7 +89,9 @@ partial class CreatingCostOrchestrateHandlerTest
     [Theory]
     [MemberData(nameof(CreatingCostOrchestrateHandlerSource.InputCreateTestData), MemberType = typeof(CreatingCostOrchestrateHandlerSource))]
     internal static async Task HandleAsync_OrchestrationSetGetResultIsSuccess_ExpectOrchestrationCreateCalledOnce(
-        CreatingCostSetOrchestrateIn input, OrchestrationActivityCallOut<EmployeeCostSetGetOut> setGetOut, FlatArray<OrchestrationActivityCallIn<ProjectCostSetCreateIn>> expectedInputs)
+        CreatingCostSetOrchestrateIn input,
+        OrchestrationActivityCallOut<EmployeeCostSetGetOut> setGetOut,
+        FlatArray<OrchestrationActivityCallIn<ProjectCostSetCreateIn>> expectedInputs)
     {
         var mockOrchestration = BuildMockOrchestration(SomeDeleteOut, setGetOut, Result.Success<Unit>(default));
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
@@ -94,7 +108,8 @@ partial class CreatingCostOrchestrateHandlerTest
     [Theory]
     [InlineData(HandlerFailureCode.Transient)]
     [InlineData(HandlerFailureCode.Persistent)]
-    public static async Task HandleAsync_OrchestrationCreateResultIsFailure_ExpectFailure(HandlerFailureCode sourceFailureCode)
+    public static async Task HandleAsync_OrchestrationCreateResultIsFailure_ExpectFailure(
+        HandlerFailureCode sourceFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var orchestrationFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
@@ -103,6 +118,7 @@ partial class CreatingCostOrchestrateHandlerTest
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
+
         var actual = await handler.HandleAsync(SomeInput, cancellationToken);
         var expected = Failure.Create(sourceFailureCode, "Some failure text", sourceException);
 

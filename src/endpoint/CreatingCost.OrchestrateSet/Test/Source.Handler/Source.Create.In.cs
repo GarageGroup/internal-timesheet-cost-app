@@ -4,9 +4,12 @@ using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateSet.Test;
 
+using EmployeeCostSetGetActivityOut = OrchestrationActivityCallOut<EmployeeCostSetGetOut>;
+using ProjectCostSetCreateActivityIn = FlatArray<OrchestrationActivityCallIn<ProjectCostSetCreateIn>>;
+
 internal static partial class CreatingCostOrchestrateHandlerSource
 {
-    public static TheoryData<CreatingCostSetOrchestrateIn, OrchestrationActivityCallOut<EmployeeCostSetGetOut>, FlatArray<OrchestrationActivityCallIn<ProjectCostSetCreateIn>>> InputCreateTestData
+    public static TheoryData<CreatingCostSetOrchestrateIn, EmployeeCostSetGetActivityOut, ProjectCostSetCreateActivityIn> InputCreateTestData
         =>
         new()
         {
