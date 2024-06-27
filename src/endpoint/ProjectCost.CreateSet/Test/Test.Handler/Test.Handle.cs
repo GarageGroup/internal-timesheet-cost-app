@@ -18,7 +18,7 @@ partial class ProjectCostCreateHandlerTest
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(null, default);
-        var expected = Failure.Create(HandlerFailureCode.Persistent, "Input is null");
+        var expected = Failure.Create(HandlerFailureCode.Persistent, "Input must be not null");
 
         Assert.Equal(expected, actual);
     }
@@ -32,6 +32,7 @@ partial class ProjectCostCreateHandlerTest
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
+
         var input = new ProjectCostSetCreateIn(
             costPeriodId: new("a03eb221-654e-4e80-8054-c489d04ef3e2"),
             systemUserId: new("fd7c47d1-bc37-418d-b2fd-9546ce03aa9a"),
@@ -49,7 +50,11 @@ partial class ProjectCostCreateHandlerTest
             {
                 Filters =
                 [
-                    new DbParameterFilter("t.ownerid", DbFilterOperator.Equal, Guid.Parse("fd7c47d1-bc37-418d-b2fd-9546ce03aa9a"), "ownerId"),
+                    new DbParameterFilter(
+                        "t.ownerid",
+                        DbFilterOperator.Equal,
+                        Guid.Parse("fd7c47d1-bc37-418d-b2fd-9546ce03aa9a"),
+                        "ownerId"),
                     new DbExistsFilter(
                         selectQuery: new(
                             tableName: "gg_employee_cost_period",
@@ -61,7 +66,11 @@ partial class ProjectCostCreateHandlerTest
                             {
                                 Filters =
                                 [
-                                    new DbParameterFilter("p.gg_employee_cost_periodid", DbFilterOperator.Equal, Guid.Parse("a03eb221-654e-4e80-8054-c489d04ef3e2"), "periodId"),
+                                    new DbParameterFilter(
+                                        "p.gg_employee_cost_periodid",
+                                        DbFilterOperator.Equal,
+                                        Guid.Parse("a03eb221-654e-4e80-8054-c489d04ef3e2"),
+                                        "periodId"),
                                     new DbRawFilter("p.gg_from_date <= t.gg_date AND p.gg_to_date >= t.gg_date")
                                 ]
                             }
@@ -72,6 +81,7 @@ partial class ProjectCostCreateHandlerTest
                 "t.regardingobjectid",
                 "t.regardingobjecttypecode"),
         };
+
         mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbTimesheet>(expectedQuery, cancellationToken), Times.Once);
     }
 
@@ -83,6 +93,7 @@ partial class ProjectCostCreateHandlerTest
 
         var mockSqlApi = BuildMockSqlApi(dbFailure);
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
+
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
@@ -94,7 +105,9 @@ partial class ProjectCostCreateHandlerTest
     [Theory]
     [MemberData(nameof(ProjectCostCreateHandlerSource.InputCreateTestData), MemberType = typeof(ProjectCostCreateHandlerSource))]
     internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseCreateCalledOnce(
-        ProjectCostSetCreateIn input, FlatArray<DbTimesheet> dbOutput, FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedInputs)
+        ProjectCostSetCreateIn input,
+        FlatArray<DbTimesheet> dbOutput,
+        FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedInputs)
     {
         var mockSqlApi = BuildMockSqlApi(dbOutput);
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
@@ -106,8 +119,11 @@ partial class ProjectCostCreateHandlerTest
 
         foreach (var expectedInput in expectedInputs)
         {
-            mockDataverseApi.Verify(f => f.CreateEntityAsync(
-                It.Is<DataverseEntityCreateIn<EmployeeProjectCostJson>>(@in => AreEqual(expectedInput, @in)), It.IsAny<CancellationToken>()), Times.Once);
+            mockDataverseApi.Verify(
+                f => f.CreateEntityAsync(
+                    It.Is<DataverseEntityCreateIn<EmployeeProjectCostJson>>(@in => AreEqual(expectedInput, @in)),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
     }
 
@@ -123,7 +139,8 @@ partial class ProjectCostCreateHandlerTest
     [InlineData(DataverseFailureCode.DuplicateRecord)]
     [InlineData(DataverseFailureCode.InvalidPayload)]
     [InlineData(DataverseFailureCode.InvalidFileSize)]
-    public static async Task HandleAsync_DataverseCreateResultIsFailure_ExpectFailure(DataverseFailureCode sourceFailureCode)
+    public static async Task HandleAsync_DataverseCreateResultIsFailure_ExpectFailure(
+        DataverseFailureCode sourceFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");

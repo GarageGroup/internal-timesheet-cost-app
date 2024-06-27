@@ -38,7 +38,9 @@ public static partial class ProjectCostCreateHandlerTest
         var mock = new Mock<ISqlQueryEntitySetSupplier>();
 
         _ = mock
-            .Setup(static a => a.QueryEntitySetOrFailureAsync<DbTimesheet>(It.IsAny<IDbQuery>(), It.IsAny<CancellationToken>()))
+            .Setup(
+                static a => a.QueryEntitySetOrFailureAsync<DbTimesheet>(
+                    It.IsAny<IDbQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         return mock;
@@ -50,18 +52,23 @@ public static partial class ProjectCostCreateHandlerTest
         var mock = new Mock<IDataverseEntityCreateSupplier>();
 
         _ = mock
-            .Setup(static a => a.CreateEntityAsync(It.IsAny<DataverseEntityCreateIn<EmployeeProjectCostJson>>(), It.IsAny<CancellationToken>()))
+            .Setup(
+                static a => a.CreateEntityAsync(
+                    It.IsAny<DataverseEntityCreateIn<EmployeeProjectCostJson>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         return mock;
     }
 
-    private static bool AreEqual(DataverseEntityCreateIn<EmployeeProjectCostJson> expected, DataverseEntityCreateIn<EmployeeProjectCostJson> actual)
+    private static bool AreEqual(
+        DataverseEntityCreateIn<EmployeeProjectCostJson> expected,
+        DataverseEntityCreateIn<EmployeeProjectCostJson> actual)
     {
         if (expected.EntityData.Cost != actual.EntityData.Cost)
         {
             return false;
         }
+
         expected.ShouldDeepEqual(actual);
         return true;
     }

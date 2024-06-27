@@ -4,9 +4,11 @@ using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.CreateSet.Test;
 
+using DataverseProjectCostCreateIn = DataverseEntityCreateIn<EmployeeProjectCostJson>;
+
 internal static partial class ProjectCostCreateHandlerSource
 {
-    public static TheoryData<ProjectCostSetCreateIn, FlatArray<DbTimesheet>, FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>>> InputCreateTestData
+    public static TheoryData<ProjectCostSetCreateIn, FlatArray<DbTimesheet>, FlatArray<DataverseProjectCostCreateIn>> InputCreateTestData
         =>
         new()
         {
