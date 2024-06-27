@@ -24,7 +24,8 @@ public static partial class EmployeeCostSetGetHandlerTest
 
     private static readonly EmployeeCostSetGetIn SomeInput
         =
-        new(new("7ba3170c-0777-4755-8e99-fb4e3ff1d240"));
+        new(
+            costPeriodId: new("7ba3170c-0777-4755-8e99-fb4e3ff1d240"));
 
     private static Mock<ISqlQueryEntitySetSupplier> BuildMockSqlApi(
         in Result<FlatArray<DbEmployeeCost>, Failure<Unit>> result)
@@ -32,7 +33,9 @@ public static partial class EmployeeCostSetGetHandlerTest
         var mock = new Mock<ISqlQueryEntitySetSupplier>();
 
         _ = mock
-            .Setup(static a => a.QueryEntitySetOrFailureAsync<DbEmployeeCost>(It.IsAny<IDbQuery>(), It.IsAny<CancellationToken>()))
+            .Setup(
+                static a => a.QueryEntitySetOrFailureAsync<DbEmployeeCost>(
+                    It.IsAny<IDbQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         return mock;

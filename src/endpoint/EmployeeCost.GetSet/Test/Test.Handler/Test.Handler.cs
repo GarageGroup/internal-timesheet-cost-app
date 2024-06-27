@@ -29,8 +29,10 @@ partial class EmployeeCostSetGetHandlerTest
             [
                 new(DbJoinType.Inner, "systemuser", "u", "c.gg_employee_id = u.systemuserid")
             ],
-            Filter = new DbParameterFilter("c.gg_period_id", DbFilterOperator.Equal, Guid.Parse("9a91a366-735b-490a-aa6f-af8ad6194724"), "periodId")
+            Filter = new DbParameterFilter(
+                "c.gg_period_id", DbFilterOperator.Equal, Guid.Parse("9a91a366-735b-490a-aa6f-af8ad6194724"), "periodId")
         };
+
         mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbEmployeeCost>(expectedQuery, cancellationToken), Times.Once);
     }
 
@@ -52,31 +54,35 @@ partial class EmployeeCostSetGetHandlerTest
     [Fact]
     public static async Task HandleAsync_DbResultIsSuccess_ExpectSuccess()
     {
-        var dbOutput = new FlatArray<DbEmployeeCost>(
-            new DbEmployeeCost()
+        FlatArray<DbEmployeeCost> dbOutput =
+        [
+            new()
             {
-                Cost = 123,
+                Cost = 5903,
                 UserId = new("6deb4bf3-b689-4436-a7c1-e9996b87428e")
             },
-            new DbEmployeeCost()
+            new()
             {
-                Cost = 123412,
+                Cost = 2500.75m,
                 UserId = new("6ba73643-debb-434c-8f77-dd1b9ad1f450")
-            });
+            }
+        ];
+
         var mockSqlApi = BuildMockSqlApi(dbOutput);
         var handler = new EmployeeCostSetGetHandler(mockSqlApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
-        var expected = new EmployeeCostSetGetOut()
+
+        var expected = new EmployeeCostSetGetOut
         {
             EmployeeCostItems =
             [
                 new(
                     systemUserId: new("6deb4bf3-b689-4436-a7c1-e9996b87428e"),
-                    employeeCost: 123),
+                    employeeCost: 5903),
                 new(
                     systemUserId: new("6ba73643-debb-434c-8f77-dd1b9ad1f450"),
-                    employeeCost: 123412),
+                    employeeCost: 2500.75m),
             ]
         };
 
