@@ -10,27 +10,37 @@ public static partial class CreatingCostStartHandlerTest
     private static readonly OrchestrationInstanceScheduleOut SomeOrchestrationOut
         =
         new(
-            instanceId: BuildOrchestrationInstanceId("Some instance id"));
+            instanceId: new InnerOrchestrationInstanceId("Some instance id"));
 
     private static readonly CreatingCostSetStartIn SomeInput
         =
         new(
-            new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
+            costPeriodId: new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
 
-    private static Mock<IOrchestrationInstanceScheduleSupplier> BuildMockOrchestration<TIn>(
+    private static Mock<IOrchestrationInstanceScheduleSupplier> BuildMockOrchestrationApi(
         in Result<OrchestrationInstanceScheduleOut, Failure<HandlerFailureCode>> result)
     {
         var mock = new Mock<IOrchestrationInstanceScheduleSupplier>();
 
         _ = mock
-            .Setup(static a => a.ScheduleInstanceAsync(It.IsAny<OrchestrationInstanceScheduleIn<TIn>>(), It.IsAny<CancellationToken>()))
+            .Setup(
+                static a => a.ScheduleInstanceAsync(
+                    It.IsAny<OrchestrationInstanceScheduleIn<CreatingCostSetOrchestrateIn>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
 
         return mock;
     }
 
-    private static IOrchestrationInstanceId BuildOrchestrationInstanceId(
-        string instanceId)
-        =>
-        Mock.Of<IOrchestrationInstanceId>(a => a.Id == instanceId);
+    private sealed record class InnerOrchestrationInstanceId : IOrchestrationInstanceId
+    {
+        public InnerOrchestrationInstanceId(string id)
+            =>
+            Id = id;
+
+        public string Id { get; }
+
+        public bool Equals(IOrchestrationInstanceId? other)
+            =>
+            Equals((object?)other);
+    }
 }
