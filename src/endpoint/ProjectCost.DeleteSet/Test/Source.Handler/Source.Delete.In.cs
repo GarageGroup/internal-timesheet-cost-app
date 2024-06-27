@@ -4,9 +4,11 @@ using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Test;
 
-internal static partial class ProjectCostDeleteHandlerSource
+using DataverseProjectCostSetGetOut = DataverseEntitySetGetOut<EmployeeProjectCostJson>;
+
+partial class ProjectCostDeleteHandlerSource
 {
-    public static TheoryData<ProjectCostSetDeleteIn, DataverseEntitySetGetOut<EmployeeProjectCostJson>, FlatArray<DataverseEntityDeleteIn>, ProjectCostSetDeleteOut> InputDeleteTestData
+    public static TheoryData<ProjectCostSetDeleteIn, DataverseProjectCostSetGetOut, FlatArray<DataverseEntityDeleteIn>> InputDeleteTestData
         =>
         new()
         {
@@ -33,11 +35,7 @@ internal static partial class ProjectCostDeleteHandlerSource
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityKey: new DataversePrimaryKey(new("7acffba8-7caa-4c7e-86c6-874ec9550849")))
-                ],
-                new()
-                {
-                    HasMore = false
-                }
+                ]
             },
             {
                 new(
@@ -63,11 +61,7 @@ internal static partial class ProjectCostDeleteHandlerSource
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityKey: new DataversePrimaryKey(new("7acffba8-7caa-4c7e-86c6-874ec9550849")))
-                ],
-                new()
-                {
-                    HasMore = true
-                }
+                ]
             }
         };
 }

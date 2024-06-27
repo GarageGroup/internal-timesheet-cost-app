@@ -8,7 +8,7 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);IDE0130</NoWarn>
-    <RootNamespace>GarageGroup.Internal.Timesheet.Endpoint.ProjectCost.DeleteSet.Test</RootNamespace>
+    <RootNamespace>GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Test</RootNamespace>
     <AssemblyName>GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Test</AssemblyName>
   </PropertyGroup>
 

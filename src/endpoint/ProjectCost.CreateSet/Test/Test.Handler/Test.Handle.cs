@@ -1,4 +1,5 @@
-﻿using GarageGroup.Infra;
+﻿using DeepEqual.Syntax;
+using GarageGroup.Infra;
 using Moq;
 using System;
 using System.Threading;
@@ -121,7 +122,7 @@ partial class ProjectCostCreateHandlerTest
         {
             mockDataverseApi.Verify(
                 f => f.CreateEntityAsync(
-                    It.Is<DataverseEntityCreateIn<EmployeeProjectCostJson>>(@in => AreEqual(expectedInput, @in)),
+                    It.Is<DataverseEntityCreateIn<EmployeeProjectCostJson>>(@in => expectedInput.IsDeepEqual(@in)),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }

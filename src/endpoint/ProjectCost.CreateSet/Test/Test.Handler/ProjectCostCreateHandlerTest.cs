@@ -1,5 +1,4 @@
-﻿using DeepEqual.Syntax;
-using GarageGroup.Infra;
+﻿using GarageGroup.Infra;
 using Moq;
 using System;
 using System.Threading;
@@ -58,18 +57,5 @@ public static partial class ProjectCostCreateHandlerTest
             .ReturnsAsync(result);
 
         return mock;
-    }
-
-    private static bool AreEqual(
-        DataverseEntityCreateIn<EmployeeProjectCostJson> expected,
-        DataverseEntityCreateIn<EmployeeProjectCostJson> actual)
-    {
-        if (expected.EntityData.Cost != actual.EntityData.Cost)
-        {
-            return false;
-        }
-
-        expected.ShouldDeepEqual(actual);
-        return true;
     }
 }

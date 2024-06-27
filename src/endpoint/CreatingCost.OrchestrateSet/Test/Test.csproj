@@ -8,7 +8,7 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);IDE0130</NoWarn>
-    <RootNamespace>GarageGroup.Internal.Timesheet.Endpoint.CreatingCost.OrchestrateSet.Test</RootNamespace>
+    <RootNamespace>GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateSet.Test</RootNamespace>
     <AssemblyName>GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateSet.Test</AssemblyName>
   </PropertyGroup>
 

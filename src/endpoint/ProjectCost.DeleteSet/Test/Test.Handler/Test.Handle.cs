@@ -12,7 +12,9 @@ partial class ProjectCostDeleteHandlerTest
     [Fact]
     public static async Task HandleAsync_ExpectDataverseGetSetCalledOnce()
     {
-        var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(SomeEmployeeProjectCostJsonOut, Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(
+            SomeEmployeeProjectCostJsonOut, Result.Success<Unit>(default));
+
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
@@ -27,6 +29,7 @@ partial class ProjectCostDeleteHandlerTest
             expandFields: default,
             orderBy: default,
             top: 10);
+
         mockDataverseApi.Verify(f => f.GetEntitySetAsync<EmployeeProjectCostJson>(expectedInput, cancellationToken), Times.Once);
     }
 
@@ -42,7 +45,8 @@ partial class ProjectCostDeleteHandlerTest
     [InlineData(DataverseFailureCode.DuplicateRecord)]
     [InlineData(DataverseFailureCode.InvalidPayload)]
     [InlineData(DataverseFailureCode.InvalidFileSize)]
-    public static async Task HandleAsync_DataverseGetSetResultIsFailure_ExpectFailure(DataverseFailureCode sourceFailureCode)
+    public static async Task HandleAsync_DataverseGetSetResultIsFailure_ExpectFailure(
+        DataverseFailureCode sourceFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
@@ -50,8 +54,7 @@ partial class ProjectCostDeleteHandlerTest
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseFailure, Result.Success<Unit>(default));
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, default);
         var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -59,8 +62,10 @@ partial class ProjectCostDeleteHandlerTest
 
     [Theory]
     [MemberData(nameof(ProjectCostDeleteHandlerSource.InputDeleteTestData), MemberType = typeof(ProjectCostDeleteHandlerSource))]
-    internal static async Task HandleAsync_DataverseGetSetResultIsSuccess_ExpectDataverseDeleteCalledOnceAndOutput(
-        ProjectCostSetDeleteIn input, DataverseEntitySetGetOut<EmployeeProjectCostJson> dataverseSetGetOut, FlatArray<DataverseEntityDeleteIn> expectedInputs, ProjectCostSetDeleteOut expectedOutput)
+    internal static async Task HandleAsync_DataverseGetSetResultIsSuccess_ExpectDataverseDeleteCalledOnce(
+        ProjectCostSetDeleteIn input,
+        DataverseEntitySetGetOut<EmployeeProjectCostJson> dataverseSetGetOut,
+        FlatArray<DataverseEntityDeleteIn> expectedInputs)
     {
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOut, Result.Success<Unit>(default));
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
@@ -72,7 +77,6 @@ partial class ProjectCostDeleteHandlerTest
         {
             mockDataverseApi.Verify(f => f.DeleteEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
-        Assert.StrictEqual(expectedOutput, actual);
     }
 
     [Theory]
@@ -87,7 +91,8 @@ partial class ProjectCostDeleteHandlerTest
     [InlineData(DataverseFailureCode.DuplicateRecord)]
     [InlineData(DataverseFailureCode.InvalidPayload)]
     [InlineData(DataverseFailureCode.InvalidFileSize)]
-    public static async Task HandleAsync_DataverseDeleteResultIsFailure_ExpectFailure(DataverseFailureCode sourceFailureCode)
+    public static async Task HandleAsync_DataverseDeleteResultIsFailure_ExpectFailure(
+        DataverseFailureCode sourceFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
@@ -95,9 +100,21 @@ partial class ProjectCostDeleteHandlerTest
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(SomeEmployeeProjectCostJsonOut, dataverseFailure);
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, default);
         var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text", sourceException);
+
+        Assert.StrictEqual(expected, actual);
+    }
+
+    [Theory]
+    [MemberData(nameof(ProjectCostDeleteHandlerSource.OutputDeleteTestData), MemberType = typeof(ProjectCostDeleteHandlerSource))]
+    internal static async Task HandleAsync_DataverseGetSetResultIsSuccess_ExpectSuccess(
+        DataverseEntitySetGetOut<EmployeeProjectCostJson> dataverseSetGetOut, ProjectCostSetDeleteOut expected)
+    {
+        var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOut, Result.Success<Unit>(default));
+        var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
+
+        var actual = await handler.HandleAsync(SomeInput, default);
 
         Assert.StrictEqual(expected, actual);
     }
