@@ -2,7 +2,7 @@ using GarageGroup.Infra;
 using System;
 using System.Text.Json.Serialization;
 
-namespace GarageGroup.TestConsoleApp;
+namespace GarageGroup.Internal.Timesheet;
 
 internal readonly record struct EmployeeProjectCostJson
 {

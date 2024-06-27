@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using GarageGroup.Infra;
-using GarageGroup.TestConsoleApp;
 
 namespace GarageGroup.Internal.Timesheet;
 
@@ -26,7 +25,7 @@ internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreat
 
     private static Result<ProjectCostSetCreateIn, Failure<HandlerFailureCode>> ValidateInput(ProjectCostSetCreateIn? input)
         =>
-        input is null ? Failure.Create(HandlerFailureCode.Persistent, "Input is null") : input;
+        input is null ? Failure.Create(HandlerFailureCode.Persistent, "Input must be not null") : input;
 
     private static FlatArray<EmployeeProjectCostJson> BuildEmployeeProjectCostJson(
         ProjectCostSetCreateIn input, FlatArray<DbTimesheet> timesheets)

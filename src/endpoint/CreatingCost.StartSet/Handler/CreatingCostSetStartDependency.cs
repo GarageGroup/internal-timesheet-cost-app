@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using GarageGroup.Infra;
 using PrimeFuncPack;
+
+[assembly: InternalsVisibleTo("GarageGroup.Internal.Timesheet.Cost.Endpoint.StartSet.OrchestrateSet.Test")]
 
 namespace GarageGroup.Internal.Timesheet;
 

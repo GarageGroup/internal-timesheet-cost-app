@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GarageGroup.Infra;
-using GarageGroup.TestConsoleApp;
 
 namespace GarageGroup.Internal.Timesheet;
 

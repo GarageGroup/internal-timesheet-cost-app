@@ -22,6 +22,11 @@ partial class OrchestrationAsyncPipeline
 
             await Task.WhenAll(firstTask, secondTask);
 
+            if (firstTask.Result.IsFailure)
+            {
+                return firstTask.Result.FailureOrThrow();
+            }
+
             return secondTask.Result;
         }
     }
