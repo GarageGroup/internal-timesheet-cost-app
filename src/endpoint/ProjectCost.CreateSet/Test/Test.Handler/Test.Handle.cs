@@ -44,8 +44,7 @@ partial class ProjectCostCreateHandlerTest
         var expectedQuery = new DbSelectQuery("gg_timesheetactivity", "t")
         {
             SelectedFields = new(
-                "t.regardingobjectid AS ProjectId",
-                "t.regardingobjecttypecode AS RegardingObjectTypeCode",
+                "t.gg_finproject_id AS ProjectId",
                 "SUM(t.gg_duration) AS Duration"),
             Filter = new DbCombinedFilter(DbLogicalOperator.And)
             {
@@ -78,9 +77,7 @@ partial class ProjectCostCreateHandlerTest
                         })
                 ]
             },
-            GroupByFields = new(
-                "t.regardingobjectid",
-                "t.regardingobjecttypecode"),
+            GroupByFields = new("t.gg_finproject_id")
         };
 
         mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbTimesheet>(expectedQuery, cancellationToken), Times.Once);
