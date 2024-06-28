@@ -25,15 +25,9 @@ internal sealed record class EmployeeProjectCostJson
         =>
         $"/gg_employee_cost_periods({periodId:D})";
 
-    internal static Dictionary<string, object> BuildExtensionData(Guid projectId, int projectType)
+    internal static string? BuildProjectLookupValue(Guid? projectId)
         =>
-        projectType switch
-        {
-            112 => new() { ["gg_regarding_object_id_incident@odata.bind"] = $"/incidents({projectId:D})" },
-            3 => new() { ["gg_regarding_object_id_opportunity@odata.bind"] = $"/opportunities({projectId:D})" },
-            4 => new() { ["gg_regarding_object_id_lead@odata.bind"] = $"/leads({projectId:D})" },
-            _ => new() { ["gg_regarding_object_id_gg_project@odata.bind"] = $"/gg_projects({projectId:D})" }
-        };
+        projectId is not null ? $"/gg_projects({projectId:D})" : null;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("gg_employee_id@odata.bind")]
@@ -43,9 +37,13 @@ internal sealed record class EmployeeProjectCostJson
     [JsonPropertyName("gg_period_id@odata.bind")]
     public string? PeriodLookupValue { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("gg_finproject_id@odata.bind")]
+    public string? ProjectLookupValue { get; init; }
+
+    [JsonPropertyName("gg_cost_share")]
+    public decimal CostShare { get; init; }
+
     [JsonPropertyName("gg_cost")]
     public decimal Cost { get; init; }
-
-    [JsonExtensionData]
-    public Dictionary<string, object>? ExtensionData { get; init; }
 }

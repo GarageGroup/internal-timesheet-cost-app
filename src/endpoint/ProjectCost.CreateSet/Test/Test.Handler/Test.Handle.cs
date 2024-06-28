@@ -1,5 +1,4 @@
-﻿using DeepEqual.Syntax;
-using GarageGroup.Infra;
+﻿using GarageGroup.Infra;
 using Moq;
 using System;
 using System.Threading;
@@ -44,8 +43,7 @@ partial class ProjectCostCreateHandlerTest
         var expectedQuery = new DbSelectQuery("gg_timesheetactivity", "t")
         {
             SelectedFields = new(
-                "t.regardingobjectid AS ProjectId",
-                "t.regardingobjecttypecode AS RegardingObjectTypeCode",
+                "t.gg_finproject_id AS ProjectId",
                 "SUM(t.gg_duration) AS Duration"),
             Filter = new DbCombinedFilter(DbLogicalOperator.And)
             {
@@ -78,9 +76,7 @@ partial class ProjectCostCreateHandlerTest
                         })
                 ]
             },
-            GroupByFields = new(
-                "t.regardingobjectid",
-                "t.regardingobjecttypecode"),
+            GroupByFields = new("t.gg_finproject_id")
         };
 
         mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbTimesheet>(expectedQuery, cancellationToken), Times.Once);
@@ -120,11 +116,7 @@ partial class ProjectCostCreateHandlerTest
 
         foreach (var expectedInput in expectedInputs)
         {
-            mockDataverseApi.Verify(
-                f => f.CreateEntityAsync(
-                    It.Is<DataverseEntityCreateIn<EmployeeProjectCostJson>>(@in => expectedInput.IsDeepEqual(@in)),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
+            mockDataverseApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 

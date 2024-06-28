@@ -43,13 +43,17 @@ internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreat
             timesheet.Duration;
 
         EmployeeProjectCostJson MapTimesheet(DbTimesheet timesheet)
-            =>
-            new()
+        {
+            var costShare = timesheet.Duration / durationSum;
+
+            return new()
             {
-                Cost = timesheet.Duration * input.EmployeeCost / durationSum,
+                CostShare = costShare,
+                Cost = costShare * input.EmployeeCost,
                 EmployeeLookupValue = EmployeeProjectCostJson.BuildEmployeeLookupValue(input.SystemUserId),
                 PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
-                ExtensionData = EmployeeProjectCostJson.BuildExtensionData(timesheet.ProjectId, timesheet.RegardingObjectTypeCode)
+                ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId)
             };
+        }
     }
 }

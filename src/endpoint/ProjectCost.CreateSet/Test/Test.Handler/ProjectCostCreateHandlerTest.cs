@@ -13,13 +13,11 @@ public static partial class ProjectCostCreateHandlerTest
             new()
             {
                 ProjectId = new("d1f6db66-e731-423f-a85f-0da3675e7b91"),
-                RegardingObjectTypeCode = 112,
                 Duration = 8
             },
             new()
             {
                 ProjectId = new("6cd8c5b8-9628-493d-b790-bc010ed26367"),
-                RegardingObjectTypeCode = 4,
                 Duration = 4
             }
         ];
