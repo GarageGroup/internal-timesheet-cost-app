@@ -26,7 +26,8 @@ internal sealed record class EmployeeProjectCostJson
         $"/gg_employee_cost_periods({periodId:D})";
 
     internal static string? BuildProjectLookupValue(Guid? projectId)
-        => projectId is not null ? $"/gg_projects({projectId:D})" : null;
+        =>
+        projectId is not null ? $"/gg_projects({projectId:D})" : null;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("gg_employee_id@odata.bind")]
