@@ -116,7 +116,7 @@ partial class ProjectCostCreateHandlerTest
 
         foreach (var expectedInput in expectedInputs)
         {
-            mockDataverseApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()),Times.Once);
+            mockDataverseApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 
