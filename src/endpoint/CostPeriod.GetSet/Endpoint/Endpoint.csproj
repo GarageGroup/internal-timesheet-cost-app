@@ -8,7 +8,7 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <NoWarn>$(NoWarn);IDE0130</NoWarn>
     <RootNamespace>GarageGroup.Internal.Timesheet</RootNamespace>
-    <AssemblyName>GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Handler</AssemblyName>
+    <AssemblyName>GarageGroup.Internal.Timesheet.Cost.Endpoint.CostPeriod.GetSet.Endpoint</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GarageGroup.Core.AsyncPipeline.Extensions" Version="0.2.2" />
-    <PackageReference Include="GarageGroup.Infra.Dataverse.Api.Abstractions" Version="3.15.0" />
+    <PackageReference Include="EarlyFuncPack.Core.AsyncPipeline" Version="0.3.0" />
+    <PackageReference Include="GarageGroup.Infra.Dataverse.Api.Abstractions.EntitySetGet" Version="3.11.0" />
     <PackageReference Include="PrimeFuncPack.Dependency.Core" Version="2.1.0" />
   </ItemGroup>
 
