@@ -35,7 +35,8 @@ public static partial class CreatingCostOrchestrateHandlerTest
     private static readonly CreatingCostSetOrchestrateIn SomeInput
         =
         new(
-            new("32ad38e2-abef-49e5-9db7-1258b195a7c3"));
+            callerUserId: new("d7ac9d0a-6c0f-463e-a9e4-68ab5b465dc7"),
+            costPeriodId: new("32ad38e2-abef-49e5-9db7-1258b195a7c3"));
 
     private static Mock<IOrchestrationActivityApi> BuildMockOrchestration(
         in Result<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>, Failure<HandlerFailureCode>> deleteResult,

@@ -14,8 +14,11 @@ public static partial class CreatingCostStartHandlerTest
 
     private static readonly CreatingCostSetStartIn SomeInput
         =
-        new(
-            costPeriodId: new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
+        new()
+        {
+            CallerUserId = new("c69b6ee2-51a4-4e07-bfda-9ef6fb0be064"),
+            CostPeriodId = new("dfe086be-9513-48dd-915c-fa1a2c1f6d05")
+        };
 
     private static Mock<IOrchestrationInstanceScheduleSupplier> BuildMockOrchestrationApi(
         in Result<OrchestrationInstanceScheduleOut, Failure<HandlerFailureCode>> result)

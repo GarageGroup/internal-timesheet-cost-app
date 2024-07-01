@@ -54,7 +54,9 @@ partial class CreatingCostOrchestrateHandlerTest
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
-        var input = new CreatingCostSetOrchestrateIn(new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
+        var input = new CreatingCostSetOrchestrateIn(
+            callerUserId: new("04fa2155-d364-4e9c-9154-9c9b9f57f5fd"), 
+            costPeriodId: new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
 
         _ = await handler.HandleAsync(input, cancellationToken);
 

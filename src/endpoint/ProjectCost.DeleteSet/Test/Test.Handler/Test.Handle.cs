@@ -9,16 +9,35 @@ namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Tes
 
 partial class ProjectCostDeleteHandlerTest
 {
+    [Theory]
+    [MemberData(nameof(ProjectCostDeleteHandlerSource.InputImpersonateDeleteTestData), MemberType = typeof(ProjectCostDeleteHandlerSource))]
+    internal static async Task HandleAsync_ExpectDataverseImpersonateCalledExactTimes(
+        ProjectCostSetDeleteIn input,
+        DataverseEntitySetGetOut<EmployeeProjectCostJson> dataverseSetGetOutput,
+        Guid expectedCallerId,
+        int expectedImpersonateCount)
+    {
+        var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOutput, Result.Success<Unit>(default));
+        var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
+
+        var cancellationToken = new CancellationToken(canceled: false);
+        _ = await handler.HandleAsync(input, cancellationToken);
+
+        mockDataverseApi.Verify(f => f.Impersonate(expectedCallerId), Times.Exactly(expectedImpersonateCount));
+    }
+
     [Fact]
     public static async Task HandleAsync_ExpectDataverseGetSetCalledOnce()
     {
-        var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(
-            SomeEmployeeProjectCostJsonOut, Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(SomeEmployeeProjectCostJsonOut, Result.Success<Unit>(default));
 
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
-        var input = new ProjectCostSetDeleteIn(new("80738293-e49b-4c3f-966d-52afc9964da2"), 10);
+        var input = new ProjectCostSetDeleteIn(
+            callerUserId: new("9cdd9452-6872-4798-ad3b-6b9819d9d577"),
+            costPeriodId: new("80738293-e49b-4c3f-966d-52afc9964da2"),
+            maxItems: 10);
 
         _ = await handler.HandleAsync(input, cancellationToken);
 
@@ -34,19 +53,19 @@ partial class ProjectCostDeleteHandlerTest
     }
 
     [Theory]
-    [InlineData(DataverseFailureCode.Unknown)]
-    [InlineData(DataverseFailureCode.Unauthorized)]
-    [InlineData(DataverseFailureCode.RecordNotFound)]
-    [InlineData(DataverseFailureCode.PicklistValueOutOfRange)]
-    [InlineData(DataverseFailureCode.UserNotEnabled)]
-    [InlineData(DataverseFailureCode.PrivilegeDenied)]
-    [InlineData(DataverseFailureCode.Throttling)]
-    [InlineData(DataverseFailureCode.SearchableEntityNotFound)]
-    [InlineData(DataverseFailureCode.DuplicateRecord)]
-    [InlineData(DataverseFailureCode.InvalidPayload)]
-    [InlineData(DataverseFailureCode.InvalidFileSize)]
+    [InlineData(DataverseFailureCode.Unknown, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.Unauthorized, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.RecordNotFound, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.PicklistValueOutOfRange, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.UserNotEnabled, HandlerFailureCode.Persistent)]
+    [InlineData(DataverseFailureCode.PrivilegeDenied, HandlerFailureCode.Persistent)]
+    [InlineData(DataverseFailureCode.Throttling, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.SearchableEntityNotFound, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.DuplicateRecord, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.InvalidPayload, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.InvalidFileSize, HandlerFailureCode.Transient)]
     public static async Task HandleAsync_DataverseGetSetResultIsFailure_ExpectFailure(
-        DataverseFailureCode sourceFailureCode)
+        DataverseFailureCode sourceFailureCode, HandlerFailureCode expectedFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
@@ -55,7 +74,7 @@ partial class ProjectCostDeleteHandlerTest
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
-        var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text", sourceException);
+        var expected = Failure.Create(expectedFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
     }
@@ -73,26 +92,26 @@ partial class ProjectCostDeleteHandlerTest
         var cancellationToken = new CancellationToken(canceled: false);
         var actual = await handler.HandleAsync(input, cancellationToken);
 
-        foreach(var expectedInput in expectedInputs)
+        foreach (var expectedInput in expectedInputs)
         {
             mockDataverseApi.Verify(f => f.DeleteEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 
     [Theory]
-    [InlineData(DataverseFailureCode.Unknown)]
-    [InlineData(DataverseFailureCode.Unauthorized)]
-    [InlineData(DataverseFailureCode.RecordNotFound)]
-    [InlineData(DataverseFailureCode.PicklistValueOutOfRange)]
-    [InlineData(DataverseFailureCode.UserNotEnabled)]
-    [InlineData(DataverseFailureCode.PrivilegeDenied)]
-    [InlineData(DataverseFailureCode.Throttling)]
-    [InlineData(DataverseFailureCode.SearchableEntityNotFound)]
-    [InlineData(DataverseFailureCode.DuplicateRecord)]
-    [InlineData(DataverseFailureCode.InvalidPayload)]
-    [InlineData(DataverseFailureCode.InvalidFileSize)]
+    [InlineData(DataverseFailureCode.Unknown, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.Unauthorized, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.RecordNotFound, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.PicklistValueOutOfRange, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.UserNotEnabled, HandlerFailureCode.Persistent)]
+    [InlineData(DataverseFailureCode.PrivilegeDenied, HandlerFailureCode.Persistent)]
+    [InlineData(DataverseFailureCode.Throttling, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.SearchableEntityNotFound, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.DuplicateRecord, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.InvalidPayload, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.InvalidFileSize, HandlerFailureCode.Transient)]
     public static async Task HandleAsync_DataverseDeleteResultIsFailure_ExpectFailure(
-        DataverseFailureCode sourceFailureCode)
+        DataverseFailureCode sourceFailureCode, HandlerFailureCode expectedFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
@@ -101,7 +120,7 @@ partial class ProjectCostDeleteHandlerTest
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
-        var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text", sourceException);
+        var expected = Failure.Create(expectedFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
     }

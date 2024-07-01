@@ -13,7 +13,7 @@ internal sealed partial class CreatingCostSetOrchestrateHandler : ICreatingCostS
         =>
         this.orchestrationActivityApi = orchestrationActivityApi;
 
-    private static FlatArray<EmployeeCost> MapEmployeeCosts(Guid costPeriodId, FlatArray<EmployeeCostItem> costs)
+    private static FlatArray<EmployeeCost> MapEmployeeCosts(CreatingCostSetOrchestrateIn input, FlatArray<EmployeeCostItem> costs)
     {
         return costs.Map(MapItem);
 
@@ -21,8 +21,9 @@ internal sealed partial class CreatingCostSetOrchestrateHandler : ICreatingCostS
             =>
             new()
             {
-                CostPeriodId = costPeriodId,
+                CostPeriodId = input.CostPeriodId,
                 SystemUserId = item.SystemUserId,
+                CallerUserId = input.CallerUserId,
                 Cost = item.EmployeeCost
             };
     }
@@ -32,6 +33,8 @@ internal sealed partial class CreatingCostSetOrchestrateHandler : ICreatingCostS
         public Guid CostPeriodId { get; init; }
 
         public Guid SystemUserId { get; init; }
+
+        public Guid CallerUserId { get; init; }
 
         public decimal Cost { get; init; }
     }

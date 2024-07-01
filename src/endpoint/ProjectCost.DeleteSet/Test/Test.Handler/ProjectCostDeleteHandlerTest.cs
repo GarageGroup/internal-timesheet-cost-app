@@ -25,6 +25,7 @@ public static partial class ProjectCostDeleteHandlerTest
     private static readonly ProjectCostSetDeleteIn SomeInput
         =
         new(
+            callerUserId: new("0424590e-7fa5-4400-ba5f-2a702fd8ea13"),
             costPeriodId: new("e178133b-8df4-4efb-be1a-2d1cc77e6802"),
             maxItems: 32);
 
@@ -33,6 +34,8 @@ public static partial class ProjectCostDeleteHandlerTest
         in Result<Unit, Failure<DataverseFailureCode>> deleteResult)
     {
         var mock = new Mock<IDataverseApiClient>();
+
+        _ = mock.Setup(static a => a.Impersonate(It.IsAny<Guid>())).Returns(mock.Object);
 
         _ = mock
             .Setup(static a => a.GetEntitySetAsync<TOut>(It.IsAny<DataverseEntitySetGetIn>(), It.IsAny<CancellationToken>()))

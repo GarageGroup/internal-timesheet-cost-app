@@ -46,14 +46,23 @@ partial class ProjectCostSetCreateHandler
             Unit.From);
 
     private ValueTask<Result<Unit, Failure<HandlerFailureCode>>> CreateProjectCostAsync(
-        EmployeeProjectCostJson input, CancellationToken cancellationToken)
+        EmployeeProjectCostModel input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input, cancellationToken)
+            input.Json, cancellationToken)
         .Pipe(
             EmployeeProjectCostJson.BuildDataverseCreateInput)
         .PipeValue(
-            dataverseApi.CreateEntityAsync)
+            dataverseApi.Impersonate(input.CallerUserId).CreateEntityAsync)
         .MapFailure(
-            static failure => failure.WithFailureCode(HandlerFailureCode.Transient));
+            static failure => failure.MapFailureCode(MapFailureCode));
+
+    private static HandlerFailureCode MapFailureCode(DataverseFailureCode failureCode)
+        =>
+        failureCode switch
+        {
+            DataverseFailureCode.UserNotEnabled => HandlerFailureCode.Persistent,
+            DataverseFailureCode.PrivilegeDenied => HandlerFailureCode.Persistent,
+            _ => HandlerFailureCode.Transient
+        };
 }

@@ -14,6 +14,7 @@ partial class ProjectCostDeleteHandlerSource
         {
             {
                 new(
+                    callerUserId: new("b01c0c4b-484d-4af9-9b62-ed40c2eeb26c"),
                     costPeriodId: new("80738293-e49b-4c3f-966d-52afc9964da2"),
                     maxItems: 2),
                 new(
@@ -39,6 +40,7 @@ partial class ProjectCostDeleteHandlerSource
             },
             {
                 new(
+                    callerUserId: new("02db1d32-bf73-4b1b-8c1d-fc69606f50cf"),
                     costPeriodId: new("80738293-e49b-4c3f-966d-52afc9964da2"),
                     maxItems: 2),
                 new(
