@@ -25,7 +25,7 @@ public static partial class ProjectCostDeleteHandlerTest
     private static readonly ProjectCostSetDeleteIn SomeInput
         =
         new(
-            systemUserId: new("0424590e-7fa5-4400-ba5f-2a702fd8ea13"),
+            callerUserId: new("0424590e-7fa5-4400-ba5f-2a702fd8ea13"),
             costPeriodId: new("e178133b-8df4-4efb-be1a-2d1cc77e6802"),
             maxItems: 32);
 

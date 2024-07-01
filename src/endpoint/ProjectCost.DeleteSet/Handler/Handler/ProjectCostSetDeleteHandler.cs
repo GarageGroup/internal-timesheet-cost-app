@@ -9,29 +9,29 @@ internal sealed partial class ProjectCostSetDeleteHandler(IDataverseApiClient da
     {
         public EmployeeProjectCostModel(
             DataverseEntitySetGetOut<EmployeeProjectCostJson> employeeProjectCosts,
-            Guid systemUserId)
+            Guid callerUserId)
         {
             EmployeeProjectCosts = employeeProjectCosts;
-            SystemUserId = systemUserId;
+            CallerUserId = callerUserId;
         }
 
         public DataverseEntitySetGetOut<EmployeeProjectCostJson> EmployeeProjectCosts { get; }
 
-        public Guid SystemUserId { get; }
+        public Guid CallerUserId { get; }
     }
 
     private sealed record class DeleteEmployeeProjectCostModel
     {
         public DeleteEmployeeProjectCostModel(
             Guid employeeProjectCostId,
-            Guid systemUserId)
+            Guid callerUserId)
         {
             EmployeeProjectCostId = employeeProjectCostId;
-            SystemUserId = systemUserId;
+            CallerUserId = callerUserId;
         }
 
         public Guid EmployeeProjectCostId { get; }
 
-        public Guid SystemUserId { get; }
+        public Guid CallerUserId { get; }
     }
 }

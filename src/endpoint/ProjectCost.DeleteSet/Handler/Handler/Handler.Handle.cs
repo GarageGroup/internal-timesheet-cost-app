@@ -15,9 +15,9 @@ partial class ProjectCostSetDeleteHandler
         .Pipe(
            static @in => EmployeeProjectCostJson.BuildDataverseSetGetInput(@in.CostPeriodId, @in.MaxItems))
         .PipeValue(
-           dataverseApi.Impersonate(input.SystemUserId).GetEntitySetAsync<EmployeeProjectCostJson>)
+           dataverseApi.Impersonate(input.CallerUserId).GetEntitySetAsync<EmployeeProjectCostJson>)
         .Map(
-            @out => new EmployeeProjectCostModel(@out, input.SystemUserId),
+            @out => new EmployeeProjectCostModel(@out, input.CallerUserId),
             static failure => failure.MapFailureCode(MapFailureCode))
         .ForwardValue(
            DeleteEmployeeProjectCostsAsync);
@@ -39,7 +39,7 @@ partial class ProjectCostSetDeleteHandler
 
         DeleteEmployeeProjectCostModel Map(EmployeeProjectCostJson json)
              =>
-             new(json.Id, input.SystemUserId);
+             new(json.Id, input.CallerUserId);
     }
 
     private ValueTask<Result<Unit, Failure<HandlerFailureCode>>> DeleteEmployeeProjectCostAsync(
@@ -50,7 +50,7 @@ partial class ProjectCostSetDeleteHandler
         .Pipe(
             EmployeeProjectCostJson.BuildDataverseDeleteInput)
         .PipeValue(
-            dataverseApi.Impersonate(input.SystemUserId).DeleteEntityAsync)
+            dataverseApi.Impersonate(input.CallerUserId).DeleteEntityAsync)
         .MapFailure(
             static failure => failure.MapFailureCode(MapFailureCode));
 

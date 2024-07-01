@@ -53,7 +53,7 @@ partial class ProjectCostSetCreateHandler
         .Pipe(
             EmployeeProjectCostJson.BuildDataverseCreateInput)
         .PipeValue(
-            dataverseApi.Impersonate(input.SystemUserId).CreateEntityAsync)
+            dataverseApi.Impersonate(input.CallerUserId).CreateEntityAsync)
         .MapFailure(
             static failure => failure.MapFailureCode(MapFailureCode));
 

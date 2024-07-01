@@ -55,7 +55,7 @@ internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreat
                     PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
                     ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId)
                 },
-                systemUserId: input.SystemUserId);
+                callerUserId: input.CallerUserId);
         }
     }
 
@@ -63,14 +63,14 @@ internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreat
     {
         public EmployeeProjectCostModel(
             EmployeeProjectCostJson json,
-            Guid systemUserId)
+            Guid callerUserId)
         {
             Json = json;
-            SystemUserId = systemUserId;
+            CallerUserId = callerUserId;
         }
 
         public EmployeeProjectCostJson Json { get; }
 
-        public Guid SystemUserId { get; }
+        public Guid CallerUserId { get; }
     }
 }

@@ -30,7 +30,7 @@ partial class ProjectCostDeleteHandlerTest
 
         var cancellationToken = new CancellationToken(canceled: false);
         var input = new ProjectCostSetDeleteIn(
-            systemUserId: new("9cdd9452-6872-4798-ad3b-6b9819d9d577"),
+            callerUserId: new("9cdd9452-6872-4798-ad3b-6b9819d9d577"),
             costPeriodId: new("80738293-e49b-4c3f-966d-52afc9964da2"),
             maxItems: 10);
 
@@ -48,7 +48,7 @@ partial class ProjectCostDeleteHandlerTest
 
         var cancellationToken = new CancellationToken(canceled: false);
         var input = new ProjectCostSetDeleteIn(
-            systemUserId: new("9cdd9452-6872-4798-ad3b-6b9819d9d577"),
+            callerUserId: new("9cdd9452-6872-4798-ad3b-6b9819d9d577"),
             costPeriodId: new("80738293-e49b-4c3f-966d-52afc9964da2"),
             maxItems: 10);
 

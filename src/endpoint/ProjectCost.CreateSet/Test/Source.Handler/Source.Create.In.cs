@@ -16,6 +16,7 @@ internal static partial class ProjectCostCreateHandlerSource
                 new(
                     costPeriodId: new("a03eb221-654e-4e80-8054-c489d04ef3e2"),
                     systemUserId: new("fd7c47d1-bc37-418d-b2fd-9546ce03aa9a"),
+                    callerUserId: new("5b25be13-5120-4807-979a-c4f879d547b3"),
                     employeeCost: 50m),
                 default,
                 default,
@@ -25,6 +26,7 @@ internal static partial class ProjectCostCreateHandlerSource
                 new(
                     costPeriodId: new("a03eb221-654e-4e80-8054-c489d04ef3e2"),
                     systemUserId: new("fd7c47d1-bc37-418d-b2fd-9546ce03aa9a"),
+                    callerUserId: new("5b25be13-5120-4807-979a-c4f879d547b3"),
                     employeeCost: 50m),
                 [
                     new()
@@ -90,7 +92,7 @@ internal static partial class ProjectCostCreateHandlerSource
                             ProjectLookupValue = null
                         })
                 ],
-                new("fd7c47d1-bc37-418d-b2fd-9546ce03aa9a")
+                new("5b25be13-5120-4807-979a-c4f879d547b3")
             }
         };
 }

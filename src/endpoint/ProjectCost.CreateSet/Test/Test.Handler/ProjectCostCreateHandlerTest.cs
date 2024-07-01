@@ -27,6 +27,7 @@ public static partial class ProjectCostCreateHandlerTest
         new(
             costPeriodId: new("331d2fc0-b4b5-476b-8bd1-976cdb2caf71"),
             systemUserId: new("f887b3d0-4cc1-4033-93bb-b4728374de85"),
+            callerUserId: new("5b25be13-5120-4807-979a-c4f879d547b3"),
             employeeCost: 12333);
 
     private static Mock<ISqlQueryEntitySetSupplier> BuildMockSqlApi(

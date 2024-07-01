@@ -6,14 +6,14 @@ namespace GarageGroup.Internal.Timesheet;
 public readonly record struct ProjectCostSetDeleteIn
 {
     [JsonConstructor]
-    public ProjectCostSetDeleteIn(Guid systemUserId, Guid costPeriodId, int maxItems)
+    public ProjectCostSetDeleteIn(Guid callerUserId, Guid costPeriodId, int maxItems)
     {
-        SystemUserId = systemUserId;
+        CallerUserId = callerUserId;
         CostPeriodId = costPeriodId;
         MaxItems = maxItems;
     }
 
-    public Guid SystemUserId { get; }
+    public Guid CallerUserId { get; }
 
     public Guid CostPeriodId { get; }
 
