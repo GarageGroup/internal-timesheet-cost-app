@@ -15,9 +15,9 @@ internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreat
 
     private readonly ISqlQueryEntitySetSupplier sqlApi;
 
-    private readonly IDataverseEntityCreateSupplier dataverseApi;
+    private readonly IDataverseImpersonateSupplier<IDataverseEntityCreateSupplier> dataverseApi;
 
-    internal ProjectCostSetCreateHandler(ISqlQueryEntitySetSupplier sqlApi, IDataverseEntityCreateSupplier dataverseApi)
+    internal ProjectCostSetCreateHandler(ISqlQueryEntitySetSupplier sqlApi, IDataverseImpersonateSupplier<IDataverseEntityCreateSupplier> dataverseApi)
     {
         this.sqlApi = sqlApi;
         this.dataverseApi = dataverseApi;
@@ -27,7 +27,7 @@ internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreat
         =>
         input is null ? Failure.Create(HandlerFailureCode.Persistent, "Input must be not null") : input;
 
-    private static FlatArray<EmployeeProjectCostJson> BuildEmployeeProjectCostJson(
+    private static FlatArray<EmployeeProjectCostModel> BuildEmployeeProjectCostJson(
         ProjectCostSetCreateIn input, FlatArray<DbTimesheet> timesheets)
     {
         if (timesheets.IsEmpty)
@@ -42,18 +42,35 @@ internal sealed partial class ProjectCostSetCreateHandler : IProjectCostSetCreat
             =>
             timesheet.Duration;
 
-        EmployeeProjectCostJson MapTimesheet(DbTimesheet timesheet)
+        EmployeeProjectCostModel MapTimesheet(DbTimesheet timesheet)
         {
             var costShare = timesheet.Duration / durationSum;
 
-            return new()
-            {
-                CostShare = costShare,
-                Cost = costShare * input.EmployeeCost,
-                EmployeeLookupValue = EmployeeProjectCostJson.BuildEmployeeLookupValue(input.SystemUserId),
-                PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
-                ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId)
-            };
+            return new(
+                json: new()
+                {
+                    CostShare = costShare,
+                    Cost = costShare * input.EmployeeCost,
+                    EmployeeLookupValue = EmployeeProjectCostJson.BuildEmployeeLookupValue(input.SystemUserId),
+                    PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
+                    ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId)
+                },
+                systemUserId: input.SystemUserId);
         }
+    }
+
+    private sealed record class EmployeeProjectCostModel
+    {
+        public EmployeeProjectCostModel(
+            EmployeeProjectCostJson json,
+            Guid systemUserId)
+        {
+            Json = json;
+            SystemUserId = systemUserId;
+        }
+
+        public EmployeeProjectCostJson Json { get; }
+
+        public Guid SystemUserId { get; }
     }
 }

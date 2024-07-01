@@ -16,13 +16,16 @@ partial class CreatingCostStartHandlerTest
         var handler = new CreatingCostSetStartHandler(mockOrchestrationApi.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
-        var input = new CreatingCostSetStartIn(new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
+        var input = new CreatingCostSetStartIn(
+            systemUserId: new("c69b6ee2-51a4-4e07-bfda-9ef6fb0be064"),
+            costPeriodId: new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
 
         _ = await handler.HandleAsync(input, cancellationToken);
 
         var expectedInput = new OrchestrationInstanceScheduleIn<CreatingCostSetOrchestrateIn>(
             orchestratorName: "OrchestrateCreatingCosts",
             value: new(
+                systemUserId: new("c69b6ee2-51a4-4e07-bfda-9ef6fb0be064"),
                 costPeriodId: new("dfe086be-9513-48dd-915c-fa1a2c1f6d05")));
 
         mockOrchestrationApi.Verify(f => f.ScheduleInstanceAsync(expectedInput, cancellationToken), Times.Once);

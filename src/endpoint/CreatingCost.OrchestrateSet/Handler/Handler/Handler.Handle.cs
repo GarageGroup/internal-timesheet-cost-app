@@ -54,7 +54,7 @@ partial class CreatingCostSetOrchestrateHandler
         {
             var @in = new OrchestrationActivityCallIn<ProjectCostSetDeleteIn>(
                 activityName: IProjectCostSetDeleteHandler.FunctionName,
-                value: new(input.CostPeriodId, MaxCostItems));
+                value: new(input.SystemUserId, input.CostPeriodId, MaxCostItems));
 
             var result = await orchestrationActivityApi.CallActivityAsync<ProjectCostSetDeleteIn, ProjectCostSetDeleteOut>(@in, cancellationToken);
             if (result.IsFailure)

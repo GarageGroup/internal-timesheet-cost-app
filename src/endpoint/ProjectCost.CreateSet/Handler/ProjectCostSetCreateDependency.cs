@@ -12,7 +12,7 @@ public static class ProjectCostSetCreateDependency
     public static Dependency<IProjectCostSetCreateHandler> UseProjectCostSetCreateHandler<TSqlApi, TDataverseApi>(
         this Dependency<TSqlApi, TDataverseApi> dependency)
         where TSqlApi : ISqlQueryEntitySetSupplier
-        where TDataverseApi : IDataverseEntityCreateSupplier
+        where TDataverseApi : IDataverseImpersonateSupplier<IDataverseEntityCreateSupplier>
     {
         ArgumentNullException.ThrowIfNull(dependency);
         return dependency.Fold<IProjectCostSetCreateHandler>(CreateHandler);

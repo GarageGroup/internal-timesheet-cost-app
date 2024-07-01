@@ -6,9 +6,13 @@ namespace GarageGroup.Internal.Timesheet;
 public readonly record struct CreatingCostSetOrchestrateIn
 {
     [JsonConstructor]
-    public CreatingCostSetOrchestrateIn(Guid costPeriodId)
-        =>
+    public CreatingCostSetOrchestrateIn(Guid systemUserId, Guid costPeriodId)
+    {
+        SystemUserId = systemUserId;
         CostPeriodId = costPeriodId;
+    }
+
+    public Guid SystemUserId { get; }
 
     public Guid CostPeriodId { get; }
 }

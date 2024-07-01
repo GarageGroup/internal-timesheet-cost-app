@@ -15,7 +15,7 @@ partial class CreatingCostSetStartHandler
         .Pipe(
             static @in => new OrchestrationInstanceScheduleIn<CreatingCostSetOrchestrateIn>(
                 orchestratorName: ICreatingCostSetOrchestrateHandler.FunctionName,
-                value: new(@in.CostPeriodId)))
+                value: new(@in.SystemUserId, @in.CostPeriodId)))
         .PipeValue(
             orchestrationInstanceApi.ScheduleInstanceAsync)
         .MapSuccess(

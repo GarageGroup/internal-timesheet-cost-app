@@ -15,35 +15,51 @@ partial class ProjectCostSetDeleteHandler
         .Pipe(
            static @in => EmployeeProjectCostJson.BuildDataverseSetGetInput(@in.CostPeriodId, @in.MaxItems))
         .PipeValue(
-           dataverseApi.GetEntitySetAsync<EmployeeProjectCostJson>)
-        .MapFailure(
-            static failure => failure.WithFailureCode(HandlerFailureCode.Transient))
+           dataverseApi.Impersonate(input.SystemUserId).GetEntitySetAsync<EmployeeProjectCostJson>)
+        .Map(
+            @out => new EmployeeProjectCostModel(@out, input.SystemUserId),
+            static failure => failure.MapFailureCode(MapFailureCode))
         .ForwardValue(
            DeleteEmployeeProjectCostsAsync);
 
     private ValueTask<Result<ProjectCostSetDeleteOut, Failure<HandlerFailureCode>>> DeleteEmployeeProjectCostsAsync(
-        DataverseEntitySetGetOut<EmployeeProjectCostJson> input, CancellationToken cancellationToken)
-        =>
-        AsyncPipeline.Pipe(
-            input.Value, cancellationToken)
+        EmployeeProjectCostModel input, CancellationToken cancellationToken)
+    {
+        return AsyncPipeline.Pipe(
+            input.EmployeeProjectCosts, cancellationToken)
+        .Pipe(
+            @in => @in.Value.Map(Map))
         .PipeParallelValue(
             DeleteEmployeeProjectCostAsync)
-        .Map(
+        .MapSuccess(
             _ => new ProjectCostSetDeleteOut
             {
-                HasMore = string.IsNullOrEmpty(input.NextLink) is false
-            },
-            static failure => failure.WithFailureCode(HandlerFailureCode.Transient));
+                HasMore = string.IsNullOrEmpty(input.EmployeeProjectCosts.NextLink) is false
+            });
+
+        DeleteEmployeeProjectCostModel Map(EmployeeProjectCostJson json)
+             =>
+             new(json.Id, input.SystemUserId);
+    }
 
     private ValueTask<Result<Unit, Failure<HandlerFailureCode>>> DeleteEmployeeProjectCostAsync(
-        EmployeeProjectCostJson input, CancellationToken cancellationToken)
+        DeleteEmployeeProjectCostModel input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input.Id, cancellationToken)
+            input.EmployeeProjectCostId, cancellationToken)
         .Pipe(
             EmployeeProjectCostJson.BuildDataverseDeleteInput)
         .PipeValue(
-            dataverseApi.DeleteEntityAsync)
+            dataverseApi.Impersonate(input.SystemUserId).DeleteEntityAsync)
         .MapFailure(
-            static failure => failure.WithFailureCode(HandlerFailureCode.Transient));
+            static failure => failure.MapFailureCode(MapFailureCode));
+
+    private static HandlerFailureCode MapFailureCode(DataverseFailureCode failureCode)
+        =>
+        failureCode switch
+        {
+            DataverseFailureCode.UserNotEnabled => HandlerFailureCode.Persistent,
+            DataverseFailureCode.PrivilegeDenied => HandlerFailureCode.Persistent,
+            _ => HandlerFailureCode.Transient
+        };
 }

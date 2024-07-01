@@ -1,6 +1,5 @@
 using GarageGroup.Infra;
 using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace GarageGroup.Internal.Timesheet;

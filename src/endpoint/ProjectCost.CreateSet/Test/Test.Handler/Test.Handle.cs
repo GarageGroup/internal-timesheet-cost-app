@@ -13,7 +13,8 @@ partial class ProjectCostCreateHandlerTest
     public static async Task HandleAsync_InputIsNull_ExpectFailure()
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
-        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
@@ -27,7 +28,8 @@ partial class ProjectCostCreateHandlerTest
     public static async Task HandleAsync_InputIsNotNull_ExpectSqlApiCalledOnce()
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
-        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
@@ -89,7 +91,8 @@ partial class ProjectCostCreateHandlerTest
         var dbFailure = sourceException.ToFailure("Some failure text");
 
         var mockSqlApi = BuildMockSqlApi(dbFailure);
-        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
@@ -101,50 +104,54 @@ partial class ProjectCostCreateHandlerTest
 
     [Theory]
     [MemberData(nameof(ProjectCostCreateHandlerSource.InputCreateTestData), MemberType = typeof(ProjectCostCreateHandlerSource))]
-    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseCreateCalledOnce(
+    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseCreateCalledOnceAndDataverseImpersonateCalledExactTimes(
         ProjectCostSetCreateIn input,
         FlatArray<DbTimesheet> dbOutput,
-        FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedInputs)
+        FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedCreateInputs,
+        Guid expectedImpersonateInput)
     {
         var mockSqlApi = BuildMockSqlApi(dbOutput);
-        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
         _ = await handler.HandleAsync(input, cancellationToken);
 
-        foreach (var expectedInput in expectedInputs)
+        foreach (var expectedInput in expectedCreateInputs)
         {
-            mockDataverseApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
+            mockDataverseCreateApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
+        mockDataverseApi.Verify(a => a.Impersonate(expectedImpersonateInput), Times.Exactly(expectedCreateInputs.Length));
     }
 
     [Theory]
-    [InlineData(DataverseFailureCode.Unknown)]
-    [InlineData(DataverseFailureCode.Unauthorized)]
-    [InlineData(DataverseFailureCode.RecordNotFound)]
-    [InlineData(DataverseFailureCode.PicklistValueOutOfRange)]
-    [InlineData(DataverseFailureCode.UserNotEnabled)]
-    [InlineData(DataverseFailureCode.PrivilegeDenied)]
-    [InlineData(DataverseFailureCode.Throttling)]
-    [InlineData(DataverseFailureCode.SearchableEntityNotFound)]
-    [InlineData(DataverseFailureCode.DuplicateRecord)]
-    [InlineData(DataverseFailureCode.InvalidPayload)]
-    [InlineData(DataverseFailureCode.InvalidFileSize)]
+    [InlineData(DataverseFailureCode.Unknown, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.Unauthorized, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.RecordNotFound, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.PicklistValueOutOfRange, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.UserNotEnabled, HandlerFailureCode.Persistent)]
+    [InlineData(DataverseFailureCode.PrivilegeDenied, HandlerFailureCode.Persistent)]
+    [InlineData(DataverseFailureCode.Throttling, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.SearchableEntityNotFound, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.DuplicateRecord, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.InvalidPayload, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.InvalidFileSize, HandlerFailureCode.Transient)]
     public static async Task HandleAsync_DataverseCreateResultIsFailure_ExpectFailure(
-        DataverseFailureCode sourceFailureCode)
+        DataverseFailureCode sourceFailureCode, HandlerFailureCode expectedFailureCode)
     {
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
 
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
-        var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(dataverseFailure);
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
-        var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text", sourceException);
+        var expected = Failure.Create(expectedFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
     }
@@ -153,7 +160,8 @@ partial class ProjectCostCreateHandlerTest
     public static async Task HandleAsync_DataverseCreateResultIsSuccess_ExpectSuccess()
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
-        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 

@@ -15,7 +15,8 @@ partial class CreatingCostOrchestrateHandlerSource
         {
             {
                 new(
-                    new("6dc97930-e8de-4f09-a7f1-8bd09286a7e9")),
+                    systemUserId: new("2e7840c3-dcba-457b-97ba-87883501019f"),
+                    costPeriodId: new("6dc97930-e8de-4f09-a7f1-8bd09286a7e9")),
                 new(
                     value: new()
                     {
