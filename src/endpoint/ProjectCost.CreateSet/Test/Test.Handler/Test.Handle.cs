@@ -105,11 +105,28 @@ partial class ProjectCostCreateHandlerTest
 
     [Theory]
     [MemberData(nameof(ProjectCostCreateHandlerSource.InputCreateTestData), MemberType = typeof(ProjectCostCreateHandlerSource))]
-    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseCreateCalledOnceAndDataverseImpersonateCalledExactTimes(
-        ProjectCostSetCreateIn input,
-        FlatArray<DbTimesheet> dbOutput,
-        FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedCreateInputs,
-        Guid expectedImpersonateInput)
+    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseCreateCalledOnce(
+        ProjectCostSetCreateIn input, FlatArray<DbTimesheet> dbTimesheets, FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedInputs)
+    {
+        var mockSqlApi = BuildMockSqlApi(dbTimesheets);
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
+
+        var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
+
+        var cancellationToken = new CancellationToken(canceled: false);
+        _ = await handler.HandleAsync(input, cancellationToken);
+
+        foreach (var expectedInput in expectedInputs)
+        {
+            mockDataverseCreateApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ProjectCostCreateHandlerSource.InputImpersonateCreateTestData), MemberType = typeof(ProjectCostCreateHandlerSource))]
+    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseImpersonateCalledExactTimes(
+        ProjectCostSetCreateIn input, FlatArray<DbTimesheet> dbOutput, Guid expectedCallerId, int expectedImpersonateCount)
     {
         var mockSqlApi = BuildMockSqlApi(dbOutput);
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
@@ -120,11 +137,7 @@ partial class ProjectCostCreateHandlerTest
         var cancellationToken = new CancellationToken(canceled: false);
         _ = await handler.HandleAsync(input, cancellationToken);
 
-        foreach (var expectedInput in expectedCreateInputs)
-        {
-            mockDataverseCreateApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
-        }
-        mockDataverseApi.Verify(a => a.Impersonate(expectedImpersonateInput), Times.Exactly(expectedCreateInputs.Length));
+        mockDataverseApi.Verify(a => a.Impersonate(expectedCallerId), Times.Exactly(expectedImpersonateCount));
     }
 
     [Theory]
