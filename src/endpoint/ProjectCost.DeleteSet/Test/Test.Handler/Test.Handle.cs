@@ -9,34 +9,21 @@ namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Tes
 
 partial class ProjectCostDeleteHandlerTest
 {
-    [Fact]
-    public static async Task HandleAsync_ExpectDataverseImpersonateCalledExactTimes()
+    [Theory]
+    [MemberData(nameof(ProjectCostDeleteHandlerSource.InputImpersonateDeleteTestData), MemberType = typeof(ProjectCostDeleteHandlerSource))]
+    internal static async Task HandleAsync_ExpectDataverseImpersonateCalledExactTimes(
+        ProjectCostSetDeleteIn input,
+        DataverseEntitySetGetOut<EmployeeProjectCostJson> dataverseSetGetOutput,
+        Guid expectedCallerId,
+        int expectedImpersonateCount)
     {
-        var dataverseSetGetOutput = new DataverseEntitySetGetOut<EmployeeProjectCostJson>(
-            value:
-            [
-                new()
-                {
-                    Id = new("97335476-1d4a-4206-a1e2-5011c3a864a3")
-                },
-                new()
-                {
-                    Id = new("081c29c1-ae4b-441a-90b0-e36550094980")
-                }
-            ]);
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOutput, Result.Success<Unit>(default));
-
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
-        var input = new ProjectCostSetDeleteIn(
-            callerUserId: new("9cdd9452-6872-4798-ad3b-6b9819d9d577"),
-            costPeriodId: new("80738293-e49b-4c3f-966d-52afc9964da2"),
-            maxItems: 10);
-
         _ = await handler.HandleAsync(input, cancellationToken);
 
-        mockDataverseApi.Verify(f => f.Impersonate(new("9cdd9452-6872-4798-ad3b-6b9819d9d577")), Times.Exactly(3));
+        mockDataverseApi.Verify(f => f.Impersonate(expectedCallerId), Times.Exactly(expectedImpersonateCount));
     }
 
     [Fact]
@@ -97,8 +84,7 @@ partial class ProjectCostDeleteHandlerTest
     internal static async Task HandleAsync_DataverseGetSetResultIsSuccess_ExpectDataverseDeleteCalledOnce(
         ProjectCostSetDeleteIn input,
         DataverseEntitySetGetOut<EmployeeProjectCostJson> dataverseSetGetOut,
-        FlatArray<DataverseEntityDeleteIn> expectedDeleteInputs,
-        Guid expectedImpersonateInput)
+        FlatArray<DataverseEntityDeleteIn> expectedInputs)
     {
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOut, Result.Success<Unit>(default));
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
@@ -106,11 +92,10 @@ partial class ProjectCostDeleteHandlerTest
         var cancellationToken = new CancellationToken(canceled: false);
         var actual = await handler.HandleAsync(input, cancellationToken);
 
-        foreach (var expectedInput in expectedDeleteInputs)
+        foreach (var expectedInput in expectedInputs)
         {
             mockDataverseApi.Verify(f => f.DeleteEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
-        mockDataverseApi.Verify(f => f.Impersonate(expectedImpersonateInput), Times.Exactly(expectedDeleteInputs.Length + 1));
     }
 
     [Theory]
