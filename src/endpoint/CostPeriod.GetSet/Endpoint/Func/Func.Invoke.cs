@@ -10,9 +10,7 @@ partial class CostPeriodSetGetFunc
         Unit input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input, cancellationToken)
-        .Pipe(
-            _ => PeriodJson.BuildDataverseSetGetInput())
+            PeriodJson.DataverseSetGetInput, cancellationToken)
         .PipeValue(
             dataverseApi.GetEntitySetAsync<PeriodJson>)
         .Map(
@@ -20,7 +18,7 @@ partial class CostPeriodSetGetFunc
             {
                 Periods = @out.Value.Map(MapCostPeriod)
             },
-            static failure => failure.WithFailureCode(default(Unit)));
+            static failure => failure.WithFailureCode<Unit>(default));
 
     private static CostPeriod MapCostPeriod(PeriodJson period)
         =>

@@ -6,38 +6,26 @@ namespace GarageGroup.Internal.Timesheet;
 
 internal sealed record class PeriodJson
 {
-    private const string EntityPluralName
-        =
-        "gg_employee_cost_periods";
+    private const string EntityPluralName = "gg_employee_cost_periods";
 
-    private const string IdFieldName
-        =
-        "gg_employee_cost_periodid";
+    private const string IdFieldName = "gg_employee_cost_periodid";
 
-    private const string NameFieldName
-        =
-        "gg_name";
+    private const string NameFieldName = "gg_name";
 
-    private const string FromDateFieldName
-        =
-        "gg_from_date";
+    private const string FromDateFieldName = "gg_from_date";
 
-    private const string ToDateFieldName
-        =
-        "gg_to_date";
+    private const string ToDateFieldName = "gg_to_date";
 
-    internal static DataverseEntitySetGetIn BuildDataverseSetGetInput()
-        =>
+    internal static readonly DataverseEntitySetGetIn DataverseSetGetInput
+        =
         new(
             entityPluralName: EntityPluralName,
             selectFields: [IdFieldName, NameFieldName, FromDateFieldName, ToDateFieldName],
             filter: default,
             expandFields: default,
-            orderBy: 
+            orderBy:
             [
-                new(
-                    fieldName: ToDateFieldName, 
-                    direction: DataverseOrderDirection.Descending)
+                new(ToDateFieldName, DataverseOrderDirection.Descending)
             ]);
 
     [JsonPropertyName(IdFieldName)]
