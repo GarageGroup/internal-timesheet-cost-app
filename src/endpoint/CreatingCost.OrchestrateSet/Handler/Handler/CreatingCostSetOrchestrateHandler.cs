@@ -30,12 +30,12 @@ internal sealed partial class CreatingCostSetOrchestrateHandler : ICreatingCostS
 
     private sealed record class EmployeeCost
     {
-        public Guid CostPeriodId { get; init; }
+        public required Guid CostPeriodId { get; init; }
 
-        public Guid SystemUserId { get; init; }
+        public required Guid SystemUserId { get; init; }
 
-        public Guid CallerUserId { get; init; }
+        public required Guid CallerUserId { get; init; }
 
-        public decimal Cost { get; init; }
+        public required decimal Cost { get; init; }
     }
 }

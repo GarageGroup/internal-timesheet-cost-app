@@ -49,7 +49,7 @@ partial class ProjectCostSetCreateHandler
         EmployeeProjectCostModel input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input.Json, cancellationToken)
+            input.Cost, cancellationToken)
         .Pipe(
             EmployeeProjectCostJson.BuildDataverseCreateInput)
         .PipeValue(

@@ -24,7 +24,7 @@ internal readonly record struct EmployeeProjectCostJson
         =>
         new(
             entityPluralName: EntityPluralName,
-            selectFields: [EmployeeProjectCostIdFieldName],
+            selectFields: new(EmployeeProjectCostIdFieldName),
             filter: $"_gg_period_id_value eq '{periodId}'",
             expandFields: default,
             orderBy: default,

@@ -17,18 +17,22 @@ partial class ProjectCostSetDeleteHandler
         .PipeValue(
            dataverseApi.Impersonate(input.CallerUserId).GetEntitySetAsync<EmployeeProjectCostJson>)
         .Map(
-            @out => new EmployeeProjectCostModel(@out, input.CallerUserId),
+            costs => new EmployeeProjectCostModel
+            {
+                EmployeeProjectCosts = costs,
+                CallerUserId = input.CallerUserId
+            },
             static failure => failure.MapFailureCode(MapFailureCode))
         .ForwardValue(
            DeleteEmployeeProjectCostsAsync);
 
     private ValueTask<Result<ProjectCostSetDeleteOut, Failure<HandlerFailureCode>>> DeleteEmployeeProjectCostsAsync(
         EmployeeProjectCostModel input, CancellationToken cancellationToken)
-    {
-        return AsyncPipeline.Pipe(
-            input.EmployeeProjectCosts, cancellationToken)
+        =>
+        AsyncPipeline.Pipe(
+            input, cancellationToken)
         .Pipe(
-            @in => @in.Value.Map(Map))
+            GetEmployeeProjectCosts)
         .PipeParallelValue(
             DeleteEmployeeProjectCostAsync)
         .MapSuccess(
@@ -36,11 +40,6 @@ partial class ProjectCostSetDeleteHandler
             {
                 HasMore = string.IsNullOrEmpty(input.EmployeeProjectCosts.NextLink) is false
             });
-
-        DeleteEmployeeProjectCostModel Map(EmployeeProjectCostJson json)
-             =>
-             new(json.Id, input.CallerUserId);
-    }
 
     private ValueTask<Result<Unit, Failure<HandlerFailureCode>>> DeleteEmployeeProjectCostAsync(
         DeleteEmployeeProjectCostModel input, CancellationToken cancellationToken)
@@ -53,13 +52,4 @@ partial class ProjectCostSetDeleteHandler
             dataverseApi.Impersonate(input.CallerUserId).DeleteEntityAsync)
         .MapFailure(
             static failure => failure.MapFailureCode(MapFailureCode));
-
-    private static HandlerFailureCode MapFailureCode(DataverseFailureCode failureCode)
-        =>
-        failureCode switch
-        {
-            DataverseFailureCode.UserNotEnabled => HandlerFailureCode.Persistent,
-            DataverseFailureCode.PrivilegeDenied => HandlerFailureCode.Persistent,
-            _ => HandlerFailureCode.Transient
-        };
 }
