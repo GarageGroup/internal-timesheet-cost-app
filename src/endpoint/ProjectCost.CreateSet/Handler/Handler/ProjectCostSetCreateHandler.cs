@@ -43,11 +43,12 @@ internal sealed partial class ProjectCostSetCreateHandler(ISqlApi sqlApi, IDatav
             {
                 Cost = new()
                 {
-                    CostShare = costShare,
-                    Cost = costShare * input.EmployeeCost,
                     EmployeeLookupValue = EmployeeProjectCostJson.BuildEmployeeLookupValue(input.SystemUserId),
                     PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
-                    ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId)
+                    ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId),
+                    CostShare = costShare,
+                    Cost = costShare * input.EmployeeCost,
+                    HoursTotal = timesheet.Duration
                 },
                 CallerUserId = input.CallerUserId
             };
