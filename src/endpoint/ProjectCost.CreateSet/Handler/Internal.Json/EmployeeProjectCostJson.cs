@@ -45,4 +45,7 @@ internal sealed record class EmployeeProjectCostJson
 
     [JsonPropertyName("gg_cost")]
     public decimal Cost { get; init; }
+
+    [JsonPropertyName("gg_hours_total")]
+    public decimal HoursTotal { get; init; }
 }
