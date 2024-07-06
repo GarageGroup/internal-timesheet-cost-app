@@ -20,15 +20,15 @@ internal readonly record struct EmployeeProjectCostJson
             entityPluralName: EntityPluralName,
             entityKey: new DataversePrimaryKey(id));
 
-    internal static DataverseEntitySetGetIn BuildDataverseSetGetInput(Guid periodId, int top)
+    internal static DataverseEntitySetGetIn BuildDataverseSetGetInput(Guid periodId, int maxPageSize)
         =>
         new(
             entityPluralName: EntityPluralName,
             selectFields: new(EmployeeProjectCostIdFieldName),
-            filter: $"_gg_period_id_value eq '{periodId}'",
-            expandFields: default,
-            orderBy: default,
-            top: top);
+            filter: $"_gg_period_id_value eq '{periodId}'")
+        {
+            MaxPageSize = maxPageSize
+        };
 
     [JsonPropertyName(EmployeeProjectCostIdFieldName)]
     public Guid Id { get; init; }
