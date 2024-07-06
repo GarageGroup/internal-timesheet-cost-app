@@ -44,10 +44,10 @@ partial class ProjectCostDeleteHandlerTest
         var expectedInput = new DataverseEntitySetGetIn(
             entityPluralName: "gg_employee_project_costs",
             selectFields: ["gg_employee_project_costid"],
-            filter: "_gg_period_id_value eq '80738293-e49b-4c3f-966d-52afc9964da2'",
-            expandFields: default,
-            orderBy: default,
-            top: 10);
+            filter: "_gg_period_id_value eq '80738293-e49b-4c3f-966d-52afc9964da2'")
+        {
+            MaxPageSize = 10
+        };
 
         mockDataverseApi.Verify(f => f.GetEntitySetAsync<EmployeeProjectCostJson>(expectedInput, cancellationToken), Times.Once);
     }
