@@ -7,6 +7,14 @@ namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.CreateSet.Tes
 
 public static partial class ProjectCostCreateHandlerTest
 {
+    private static readonly ProjectCostSetCreateIn SomeInput
+        =
+        new(
+            costPeriodId: new("331d2fc0-b4b5-476b-8bd1-976cdb2caf71"),
+            systemUserId: new("f887b3d0-4cc1-4033-93bb-b4728374de85"),
+            callerUserId: new("5b25be13-5120-4807-979a-c4f879d547b3"),
+            employeeCost: 1300);
+
     private static readonly FlatArray<DbTimesheet> SomeDbTimesheetSet
         =
         [
@@ -22,16 +30,19 @@ public static partial class ProjectCostCreateHandlerTest
             }
         ];
 
-    private static readonly ProjectCostSetCreateIn SomeInput
+    private static readonly FlatArray<DbProjectCost> SomeDbProjectCostSet
         =
-        new(
-            costPeriodId: new("331d2fc0-b4b5-476b-8bd1-976cdb2caf71"),
-            systemUserId: new("f887b3d0-4cc1-4033-93bb-b4728374de85"),
-            callerUserId: new("5b25be13-5120-4807-979a-c4f879d547b3"),
-            employeeCost: 12333);
+        [
+            new()
+            {
+                TotalCost = 10.3m,
+                TotalHours = 250.1m
+            }
+        ];
 
     private static Mock<ISqlQueryEntitySetSupplier> BuildMockSqlApi(
-        in Result<FlatArray<DbTimesheet>, Failure<Unit>> result)
+        in Result<FlatArray<DbTimesheet>, Failure<Unit>> dbTimesheetSetResult,
+        in Result<FlatArray<DbProjectCost>, Failure<Unit>> dbProjectCostSetResult)
     {
         var mock = new Mock<ISqlQueryEntitySetSupplier>();
 
@@ -39,7 +50,13 @@ public static partial class ProjectCostCreateHandlerTest
             .Setup(
                 static a => a.QueryEntitySetOrFailureAsync<DbTimesheet>(
                     It.IsAny<IDbQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(result);
+            .ReturnsAsync(dbTimesheetSetResult);
+
+        _ = mock
+            .Setup(
+                static a => a.QueryEntitySetOrFailureAsync<DbProjectCost>(
+                    It.IsAny<IDbQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dbProjectCostSetResult);
 
         return mock;
     }

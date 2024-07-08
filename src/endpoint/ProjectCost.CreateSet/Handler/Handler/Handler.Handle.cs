@@ -22,6 +22,22 @@ partial class ProjectCostSetCreateHandler
         =>
         AsyncPipeline.Pipe(
             input, cancellationToken)
+        .PipeParallelValue(
+            GetTimesheetsAsync,
+            GetTotalCostAsync)
+        .MapSuccess(
+            @out => BuildEmployeeProjectCostJson(input, @out.Item2, @out.Item1))
+        .ForwardParallelValue(
+            CreateProjectCostAsync,
+            ParallelOption)
+        .MapSuccess(
+            Unit.From);
+
+    private ValueTask<Result<FlatArray<DbTimesheet>, Failure<HandlerFailureCode>>> GetTimesheetsAsync(
+        ProjectCostSetCreateIn input, CancellationToken cancellationToken)
+        =>
+        AsyncPipeline.Pipe(
+            input, cancellationToken)
         .Pipe(
             static @in => DbTimesheet.QueryAll with
             {
@@ -30,20 +46,38 @@ partial class ProjectCostSetCreateHandler
                     Filters =
                     [
                         DbTimesheet.BuildOwnerFilter(@in.SystemUserId),
-                        DbTimesheet.BuildDateFilter(@in.CostPeriodId),
+                        DbTimesheet.BuildDateFilter(@in.CostPeriodId)
                     ]
                 }
             })
         .PipeValue(
             sqlApi.QueryEntitySetOrFailureAsync<DbTimesheet>)
+        .MapFailure(
+            static failure => failure.WithFailureCode(HandlerFailureCode.Transient));
+
+    private ValueTask<Result<DbProjectCost, Failure<HandlerFailureCode>>> GetTotalCostAsync(
+        ProjectCostSetCreateIn input, CancellationToken cancellationToken)
+        =>
+        AsyncPipeline.Pipe(
+            input, cancellationToken)
+        .Pipe(
+            static @in => DbProjectCost.QueryAll with
+            {
+                Filter = new DbCombinedFilter(DbLogicalOperator.And)
+                {
+                    Filters =
+                    [
+                        DbProjectCost.ManualCreationFilter,
+                        DbProjectCost.BuildEmployeeIdFilter(@in.SystemUserId),
+                        DbProjectCost.BuildPeriodIdFilter(@in.CostPeriodId)
+                    ]
+                }
+            })
+        .PipeValue(
+            sqlApi.QueryEntitySetOrFailureAsync<DbProjectCost>)
         .Map(
-            timesheets => BuildEmployeeProjectCostJson(input, timesheets),
-            static failure => failure.WithFailureCode(HandlerFailureCode.Transient))
-        .ForwardParallelValue(
-            CreateProjectCostAsync,
-            ParallelOption)
-        .MapSuccess(
-            Unit.From);
+            static dbCosts => dbCosts.IsEmpty ? new() : dbCosts[0],
+            static failure => failure.WithFailureCode(HandlerFailureCode.Transient));
 
     private ValueTask<Result<Unit, Failure<HandlerFailureCode>>> CreateProjectCostAsync(
         EmployeeProjectCostModel input, CancellationToken cancellationToken)

@@ -21,14 +21,16 @@ internal sealed partial class ProjectCostSetCreateHandler(ISqlApi sqlApi, IDatav
         input is null ? Failure.Create(HandlerFailureCode.Persistent, "Input must be not null") : input;
 
     private static FlatArray<EmployeeProjectCostModel> BuildEmployeeProjectCostJson(
-        ProjectCostSetCreateIn input, FlatArray<DbTimesheet> timesheets)
+        ProjectCostSetCreateIn input, DbProjectCost totalCost, FlatArray<DbTimesheet> timesheets)
     {
         if (timesheets.IsEmpty)
         {
             return default;
         }
 
-        var durationSum = timesheets.AsEnumerable().Sum(GetDuration);
+        var employeeCost = input.EmployeeCost - totalCost.TotalCost.GetValueOrDefault();
+
+        var durationSum = timesheets.AsEnumerable().Sum(GetDuration) + totalCost.TotalHours.GetValueOrDefault();
         return timesheets.Map(MapTimesheet);
 
         static decimal GetDuration(DbTimesheet timesheet)
@@ -47,7 +49,7 @@ internal sealed partial class ProjectCostSetCreateHandler(ISqlApi sqlApi, IDatav
                     PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
                     ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId),
                     CostShare = costShare,
-                    Cost = costShare * input.EmployeeCost,
+                    Cost = costShare * employeeCost,
                     HoursTotal = timesheet.Duration
                 },
                 CallerUserId = input.CallerUserId

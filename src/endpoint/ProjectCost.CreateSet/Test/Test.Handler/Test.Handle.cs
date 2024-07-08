@@ -12,7 +12,8 @@ partial class ProjectCostCreateHandlerTest
     [Fact]
     public static async Task HandleAsync_InputIsNull_ExpectFailure()
     {
-        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
+        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
+
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
         var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
@@ -25,15 +26,14 @@ partial class ProjectCostCreateHandlerTest
     }
 
     [Fact]
-    public static async Task HandleAsync_InputIsNotNull_ExpectSqlApiCalledOnce()
+    public static async Task HandleAsync_InputIsNotNull_ExpectDbTimesheetSetQueryCalledOnce()
     {
-        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
+        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
+
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
         var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
-
-        var cancellationToken = new CancellationToken(canceled: false);
 
         var input = new ProjectCostSetCreateIn(
             costPeriodId: new("a03eb221-654e-4e80-8054-c489d04ef3e2"),
@@ -41,7 +41,7 @@ partial class ProjectCostCreateHandlerTest
             callerUserId: new("5b25be13-5120-4807-979a-c4f879d547b3"),
             employeeCost: 2121);
 
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, default);
 
         var expectedQuery = new DbSelectQuery("gg_timesheetactivity", "t")
         {
@@ -82,16 +82,17 @@ partial class ProjectCostCreateHandlerTest
             GroupByFields = new("t.gg_finproject_id")
         };
 
-        mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbTimesheet>(expectedQuery, cancellationToken), Times.Once);
+        mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbTimesheet>(expectedQuery, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public static async Task HandleAsync_DbResultIsFailure_ExpectFailure()
+    public static async Task HandleAsync_DbTimesheetSetQueryIsFailure_ExpectTransientFailure()
     {
         var sourceException = new Exception("Some error message");
         var dbFailure = sourceException.ToFailure("Some failure text");
 
-        var mockSqlApi = BuildMockSqlApi(dbFailure);
+        var mockSqlApi = BuildMockSqlApi(dbFailure, SomeDbProjectCostSet);
+
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
         var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
@@ -103,12 +104,81 @@ partial class ProjectCostCreateHandlerTest
         Assert.StrictEqual(expected, actual);
     }
 
+    [Fact]
+    public static async Task HandleAsync_InputIsNotNull_ExpectDbProjectCostSetQueryCalledOnce()
+    {
+        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
+
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
+
+        var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
+
+        var input = new ProjectCostSetCreateIn(
+            costPeriodId: new("0222cde4-e8b9-4089-bd30-e16437ded342"),
+            systemUserId: new("88be489c-3607-426e-a46e-4740a0076765"),
+            callerUserId: new("8831be32-14bc-4f7c-b572-cd3224d7d5f2"),
+            employeeCost: 3300);
+
+        _ = await handler.HandleAsync(input, default);
+
+        var expectedQuery = new DbSelectQuery("gg_employee_project_cost", "c")
+        {
+            SelectedFields = new(
+                "SUM(c.gg_cost) AS TotalCost",
+                "SUM(c.gg_hours_total) AS TotalHours"),
+            Filter = new DbCombinedFilter(DbLogicalOperator.And)
+            {
+                Filters =
+                [
+                    new DbRawFilter(
+                        "c.createdonbehalfby IS NULL"),
+                    new DbParameterFilter(
+                        "c.gg_employee_id",
+                        DbFilterOperator.Equal,
+                        Guid.Parse("88be489c-3607-426e-a46e-4740a0076765"),
+                        "employeeId"),
+                    new DbParameterFilter(
+                        "c.gg_period_id",
+                        DbFilterOperator.Equal,
+                        Guid.Parse("0222cde4-e8b9-4089-bd30-e16437ded342"),
+                        "periodId")
+                ]
+            }
+        };
+
+        mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbProjectCost>(expectedQuery, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public static async Task HandleAsync_DbProjectCostSetQueryIsFailure_ExpectTransientFailure()
+    {
+        var sourceException = new Exception("Some exception");
+        var dbFailure = sourceException.ToFailure("Some failure message");
+
+        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, dbFailure);
+
+        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
+        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
+
+        var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
+
+        var actual = await handler.HandleAsync(SomeInput, default);
+        var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure message", sourceException);
+
+        Assert.StrictEqual(expected, actual);
+    }
+
     [Theory]
     [MemberData(nameof(ProjectCostCreateHandlerSource.InputCreateTestData), MemberType = typeof(ProjectCostCreateHandlerSource))]
-    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseCreateCalledOnce(
-        ProjectCostSetCreateIn input, FlatArray<DbTimesheet> dbTimesheets, FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedInputs)
+    internal static async Task HandleAsync_DbResultsAreSuccesses_ExpectDataverseCreateCalledOnce(
+        ProjectCostSetCreateIn input,
+        FlatArray<DbTimesheet> dbTimesheets,
+        FlatArray<DbProjectCost> dbProjectCosts,
+        FlatArray<DataverseEntityCreateIn<EmployeeProjectCostJson>> expectedInputs)
     {
-        var mockSqlApi = BuildMockSqlApi(dbTimesheets);
+        var mockSqlApi = BuildMockSqlApi(dbTimesheets, dbProjectCosts);
+
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
         var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
@@ -128,7 +198,8 @@ partial class ProjectCostCreateHandlerTest
     internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseImpersonateCalledExactTimes(
         ProjectCostSetCreateIn input, FlatArray<DbTimesheet> dbOutput, Guid expectedCallerId, int expectedImpersonateCount)
     {
-        var mockSqlApi = BuildMockSqlApi(dbOutput);
+        var mockSqlApi = BuildMockSqlApi(dbOutput, SomeDbProjectCostSet);
+
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
         var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
@@ -158,7 +229,8 @@ partial class ProjectCostCreateHandlerTest
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure text");
 
-        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
+        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
+
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(dataverseFailure);
         var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
@@ -173,7 +245,8 @@ partial class ProjectCostCreateHandlerTest
     [Fact]
     public static async Task HandleAsync_DataverseCreateResultIsSuccess_ExpectSuccess()
     {
-        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
+        var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
+
         var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
         var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
 
