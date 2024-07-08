@@ -25,7 +25,7 @@ internal readonly record struct EmployeeProjectCostJson
         new(
             entityPluralName: EntityPluralName,
             selectFields: new(EmployeeProjectCostIdFieldName),
-            filter: $"_gg_period_id_value eq '{periodId}'")
+            filter: $"_gg_period_id_value eq '{periodId}' and createdonbehalfby ne null")
         {
             MaxPageSize = maxPageSize
         };
