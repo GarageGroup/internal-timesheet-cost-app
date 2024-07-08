@@ -129,4 +129,4 @@ jobs:
           health_check_url: https://${{ vars.WEBAPP_NAME }}.azurewebsites.net/health?code=${{ secrets.WEBAPP_KEY }}
           contains: ${{ steps.get_version.outputs.version }}
           retry_delay_in_seconds: 15
-          max_attempts: 10
+          max_attempts: 30
