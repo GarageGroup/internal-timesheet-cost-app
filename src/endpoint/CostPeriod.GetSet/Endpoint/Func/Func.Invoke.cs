@@ -14,7 +14,7 @@ partial class CostPeriodSetGetFunc
         .PipeValue(
             dataverseApi.GetEntitySetAsync<PeriodJson>)
         .Map(
-            static @out => new CostPeriodSetGetOut()
+            static @out => new CostPeriodSetGetOut
             {
                 Periods = @out.Value.Map(MapCostPeriod)
             },

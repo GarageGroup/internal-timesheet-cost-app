@@ -13,14 +13,14 @@ internal static partial class CostPeriodSetGetFuncSource
                 new(
                     value:
                     [
-                        new PeriodJson()
+                        new()
                         {
                             Id = new("48c45953-b49d-4b78-bf3a-3567a96abb07"),
                             Name = "Some first name",
                             From = new(2024, 6, 1, 12, 23, 1),
                             To = new(2024, 6, 30, 12, 22, 3)
                         },
-                        new PeriodJson()
+                        new()
                         {
                             Id = new("505e8431-c90c-4069-9c9d-18413b4e54e0"),
                             Name = "Some second name",
@@ -32,12 +32,12 @@ internal static partial class CostPeriodSetGetFuncSource
                 {
                     Periods =
                     [
-                        new Timesheet.CostPeriod(
+                        new(
                             id: new("48c45953-b49d-4b78-bf3a-3567a96abb07"),
                             name: "Some first name",
                             from: new(2024, 6, 1),
                             to: new(2024, 6, 30)),
-                        new Timesheet.CostPeriod(
+                        new(
                             id: new("505e8431-c90c-4069-9c9d-18413b4e54e0"),
                             name: "Some second name",
                             from: new(2024, 5, 10),

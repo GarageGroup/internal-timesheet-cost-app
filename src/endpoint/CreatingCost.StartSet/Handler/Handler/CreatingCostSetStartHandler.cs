@@ -2,11 +2,5 @@
 
 namespace GarageGroup.Internal.Timesheet;
 
-internal sealed partial class CreatingCostSetStartHandler : ICreatingCostSetStartHandler
-{
-    private readonly IOrchestrationInstanceScheduleSupplier orchestrationInstanceApi;
-
-    internal CreatingCostSetStartHandler(IOrchestrationInstanceScheduleSupplier orchestrationInstanceApi)
-        =>
-        this.orchestrationInstanceApi = orchestrationInstanceApi;
-}
+internal sealed partial class CreatingCostSetStartHandler(IOrchestrationInstanceScheduleSupplier orchestrationInstanceApi)
+    : ICreatingCostSetStartHandler;

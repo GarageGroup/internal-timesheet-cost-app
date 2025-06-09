@@ -1,5 +1,4 @@
-﻿using Castle.Components.DictionaryAdapter.Xml;
-using GarageGroup.Infra;
+﻿using GarageGroup.Infra;
 using Moq;
 using System;
 using System.Threading;
@@ -26,9 +25,7 @@ partial class CostPeriodSetGetFuncTest
             expandFields: default,
             orderBy:
             [
-                new(
-                    fieldName: "gg_to_date",
-                    direction: DataverseOrderDirection.Descending)
+                new("gg_to_date", DataverseOrderDirection.Descending)
             ]);
 
         mockDataverseApi.Verify(a => a.GetEntitySetAsync<PeriodJson>(expectedInput, cancellationToken), Times.Once);
@@ -56,7 +53,7 @@ partial class CostPeriodSetGetFuncTest
         var func = new CostPeriodSetGetFunc(mockDataverseApi.Object);
 
         var actual = await func.InvokeAsync(default, default);
-        var expected = Failure.Create(default(Unit), "Some failure message", sourceException);
+        var expected = Failure.Create("Some failure message", sourceException);
 
         Assert.StrictEqual(expected, actual);
     }
