@@ -12,14 +12,14 @@ public static partial class CostPeriodSetGetFuncTest
         new(
             value:
             [
-                new PeriodJson()
+                new()
                 {
                     Id = new("ac3fad55-b805-4cad-a53e-b8c394565c9d"),
                     Name = "Some first name",
                     From = new(2024, 6, 1, 21, 22, 3),
                     To = new(2024, 6, 30, 21, 22, 3)
                 },
-                new PeriodJson()
+                new()
                 {
                     Id = new("7f17ed88-e0ca-41eb-b11f-800b0a79bc3c"),
                     Name = "Some second name",

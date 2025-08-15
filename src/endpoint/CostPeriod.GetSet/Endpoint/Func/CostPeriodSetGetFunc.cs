@@ -2,6 +2,4 @@
 
 namespace GarageGroup.Internal.Timesheet;
 
-internal sealed partial class CostPeriodSetGetFunc(IDataverseEntitySetGetSupplier dataverseApi) : ICostPeriodSetGetFunc
-{
-}
+internal sealed partial class CostPeriodSetGetFunc(IDataverseEntitySetGetSupplier dataverseApi) : ICostPeriodSetGetFunc;

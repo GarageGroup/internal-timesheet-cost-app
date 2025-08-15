@@ -1,0 +1,36 @@
+<Solution>
+  <Folder Name="/app/">
+    <Project Path="src/app/AzureFunc/AzureFunc.csproj" />
+  </Folder>
+  <Folder Name="/endpoint/" />
+  <Folder Name="/endpoint/CostPeriod.GetSet/">
+    <Project Path="src/endpoint/CostPeriod.GetSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/CostPeriod.GetSet/Endpoint/Endpoint.csproj" />
+    <Project Path="src/endpoint/CostPeriod.GetSet/Test/Test.csproj" />
+  </Folder>
+  <Folder Name="/endpoint/CreatingCost.OrchestrateSet/">
+    <Project Path="src/endpoint/CreatingCost.OrchestrateSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/CreatingCost.OrchestrateSet/Handler/Handler.csproj" />
+    <Project Path="src/endpoint/CreatingCost.OrchestrateSet/Test/Test.csproj" />
+  </Folder>
+  <Folder Name="/endpoint/CreatingCost.StartSet/">
+    <Project Path="src/endpoint/CreatingCost.StartSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/CreatingCost.StartSet/Handler/Handler.csproj" />
+    <Project Path="src/endpoint/CreatingCost.StartSet/Test/Test.csproj" />
+  </Folder>
+  <Folder Name="/endpoint/EmployeeCost.GetSet/">
+    <Project Path="src/endpoint/EmployeeCost.GetSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/EmployeeCost.GetSet/Handler/Handler.csproj" />
+    <Project Path="src/endpoint/EmployeeCost.GetSet/Test/Test.csproj" />
+  </Folder>
+  <Folder Name="/endpoint/ProjectCost.CreateSet/">
+    <Project Path="src/endpoint/ProjectCost.CreateSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/ProjectCost.CreateSet/Handler/Handler.csproj" />
+    <Project Path="src/endpoint/ProjectCost.CreateSet/Test/Test.csproj" />
+  </Folder>
+  <Folder Name="/endpoint/ProjectCost.DeleteSet/">
+    <Project Path="src/endpoint/ProjectCost.DeleteSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/ProjectCost.DeleteSet/Handler/Handler.csproj" />
+    <Project Path="src/endpoint/ProjectCost.DeleteSet/Test/Test.csproj" />
+  </Folder>
+</Solution>

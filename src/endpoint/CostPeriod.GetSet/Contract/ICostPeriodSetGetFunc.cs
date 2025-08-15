@@ -11,6 +11,5 @@ public interface ICostPeriodSetGetFunc
 {
     public const string FunctionName = "GetCostPeriods";
 
-    ValueTask<Result<CostPeriodSetGetOut, Failure<Unit>>> InvokeAsync(
-        Unit input, CancellationToken cancellationToken);
+    ValueTask<Result<CostPeriodSetGetOut, Failure<Unit>>> InvokeAsync(Unit input, CancellationToken cancellationToken);
 }
