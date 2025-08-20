@@ -20,7 +20,7 @@ partial class ProjectCostCreateHandlerTest
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(null, default);
-        var expected = Failure.Create(HandlerFailureCode.Persistent, "Input must be not null");
+        var expected = Failure.Create(HandlerFailureCode.Persistent, "Input must be not null.");
 
         Assert.Equal(expected, actual);
     }
@@ -132,7 +132,7 @@ partial class ProjectCostCreateHandlerTest
                 Filters =
                 [
                     new DbRawFilter(
-                        "c.createdonbehalfby IS NULL"),
+                        "c.gg_createdmethod_is = 1"),
                     new DbParameterFilter(
                         "c.gg_employee_id",
                         DbFilterOperator.Equal,

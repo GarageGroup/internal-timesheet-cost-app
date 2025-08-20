@@ -7,7 +7,7 @@ partial record class DbProjectCost
 {
     internal static readonly DbRawFilter ManualCreationFilter
         =
-        new($"{AliasName}.createdonbehalfby IS NULL");
+        new($"{AliasName}.gg_createdmethod_is = 1");
 
     internal static DbParameterFilter BuildEmployeeIdFilter(Guid employeeId)
         =>

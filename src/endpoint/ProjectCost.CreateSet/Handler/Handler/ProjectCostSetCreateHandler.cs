@@ -18,7 +18,7 @@ internal sealed partial class ProjectCostSetCreateHandler(ISqlApi sqlApi, IDatav
 
     private static Result<ProjectCostSetCreateIn, Failure<HandlerFailureCode>> ValidateInput(ProjectCostSetCreateIn? input)
         =>
-        input is null ? Failure.Create(HandlerFailureCode.Persistent, "Input must be not null") : input;
+        input is null ? Failure.Create(HandlerFailureCode.Persistent, "Input must be not null.") : input;
 
     private static FlatArray<EmployeeProjectCostModel> BuildEmployeeProjectCostJson(
         ProjectCostSetCreateIn input, DbProjectCost totalCost, FlatArray<DbTimesheet> timesheets)
@@ -48,9 +48,13 @@ internal sealed partial class ProjectCostSetCreateHandler(ISqlApi sqlApi, IDatav
                     EmployeeLookupValue = EmployeeProjectCostJson.BuildEmployeeLookupValue(input.SystemUserId),
                     PeriodLookupValue = EmployeeProjectCostJson.BuildPeriodLookupValue(input.CostPeriodId),
                     ProjectLookupValue = EmployeeProjectCostJson.BuildProjectLookupValue(timesheet.ProjectId),
+                    ProjectBillingPeriodLookupValue = EmployeeProjectCostJson.BuildProjectBillingPeriodLookupValue(
+                        periodId: input.CostPeriodId,
+                        projectId: timesheet.ProjectId),
                     CostShare = costShare,
                     Cost = costShare * employeeCost,
-                    HoursTotal = timesheet.Duration
+                    HoursTotal = timesheet.Duration,
+                    IsAutomaticallyCreated = true
                 },
                 CallerUserId = input.CallerUserId
             };

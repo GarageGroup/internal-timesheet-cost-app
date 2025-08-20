@@ -3,7 +3,7 @@ using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.CreateSet.Test;
 
-internal static partial class ProjectCostCreateHandlerSource
+partial class ProjectCostCreateHandlerSource
 {
     public static TheoryData<ProjectCostSetCreateIn, FlatArray<DbTimesheet>, Guid, int> InputImpersonateCreateTestData
         =>

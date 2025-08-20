@@ -28,6 +28,10 @@ internal sealed record class EmployeeProjectCostJson
         =>
         projectId is not null ? $"/gg_projects({projectId:D})" : null;
 
+    internal static string? BuildProjectBillingPeriodLookupValue(Guid periodId, Guid? projectId)
+        =>
+        projectId is null ? null : $"/gg_project_billing_periods(_gg_billingperiod_id_value={periodId:D},_gg_project_id_value={projectId:D})";
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("gg_employee_id@odata.bind")]
     public string? EmployeeLookupValue { get; init; }
@@ -40,6 +44,10 @@ internal sealed record class EmployeeProjectCostJson
     [JsonPropertyName("gg_finproject_id@odata.bind")]
     public string? ProjectLookupValue { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("gg_project_billingperiod_id@odata.bind")]
+    public string? ProjectBillingPeriodLookupValue { get; init; }
+
     [JsonPropertyName("gg_cost_share")]
     public decimal CostShare { get; init; }
 
@@ -48,4 +56,7 @@ internal sealed record class EmployeeProjectCostJson
 
     [JsonPropertyName("gg_hours_total")]
     public decimal HoursTotal { get; init; }
+
+    [JsonPropertyName("gg_createdmethod_is")]
+    public bool IsAutomaticallyCreated { get; init; }
 }

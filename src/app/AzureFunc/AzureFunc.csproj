@@ -23,8 +23,10 @@
     <ProjectReference Include="..\..\endpoint\CreatingCost.OrchestrateSet\Handler\Handler.csproj" />
     <ProjectReference Include="..\..\endpoint\CreatingCost.StartSet\Handler\Handler.csproj" />
     <ProjectReference Include="..\..\endpoint\EmployeeCost.GetSet\Handler\Handler.csproj" />
-    <ProjectReference Include="..\..\endpoint\ProjectCost.DeleteSet\Handler\Handler.csproj" />
+    <ProjectReference Include="..\..\endpoint\ProjectBilling.CalculateSet\Handler\Handler.csproj" />
+    <ProjectReference Include="..\..\endpoint\ProjectBilling.EnsureSet\Handler\Handler.csproj" />
     <ProjectReference Include="..\..\endpoint\ProjectCost.CreateSet\Handler\Handler.csproj" />
+    <ProjectReference Include="..\..\endpoint\ProjectCost.DeleteSet\Handler\Handler.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +35,7 @@
     <PackageReference Include="GarageGroup.Infra.Azure.Hosting" Version="0.13.0" />
     <PackageReference Include="GarageGroup.Infra.Dataverse.Api" Version="3.18.0" />
     <PackageReference Include="GarageGroup.Infra.HealthCheck.Handler" Version="0.3.0" />
+    <PackageReference Include="GarageGroup.Infra.Http.Api" Version="0.3.0" />
     <PackageReference Include="GarageGroup.Infra.Http.Polly" Version="2.0.1" />
     <PackageReference Include="GarageGroup.Infra.Sql.Api" Version="3.0.0" />
     <PackageReference Include="GarageGroup.Infra.Sql.Api.Provider.Dataverse" Version="0.3.0" />
