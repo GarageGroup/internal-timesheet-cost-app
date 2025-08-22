@@ -10,11 +10,15 @@ internal sealed record class EmployeeProjectCostJson
         =
         "gg_employee_project_costs";
 
-    internal static DataverseEntityCreateIn<EmployeeProjectCostJson> BuildDataverseCreateInput(EmployeeProjectCostJson item)
+    internal static DataverseEntityCreateIn<EmployeeProjectCostJson> BuildDataverseCreateInput(
+        EmployeeProjectCostJson item, Guid callerObjectId)
         =>
         new(
             entityPluralName: EntityPluralName,
-            entityData: item);
+            entityData: item)
+        {
+            CallerObjectId = callerObjectId
+        };
 
     internal static string BuildEmployeeLookupValue(Guid employeeId)
         =>

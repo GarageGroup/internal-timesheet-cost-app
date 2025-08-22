@@ -10,11 +10,15 @@ internal sealed record class ProjectBillingPeriodJson
         =
         "gg_project_billing_periods";
 
-    internal static DataverseEntityCreateIn<ProjectBillingPeriodJson> BuildDataverseCreateInput(ProjectBillingPeriodJson item)
+    internal static DataverseEntityCreateIn<ProjectBillingPeriodJson> BuildDataverseCreateInput(
+        ProjectBillingPeriodJson item, Guid callerObjectId)
         =>
         new(
             entityPluralName: EntityPluralName,
-            entityData: item);
+            entityData: item)
+        {
+            CallerObjectId = callerObjectId
+        };
 
     internal static string BuildPeriodLookupValue(Guid periodId)
         =>

@@ -66,7 +66,10 @@ partial class ProjectCostCreateHandlerSource
                                 projectId: "d1f6db66-e731-423f-a85f-0da3675e7b91"),
                             HoursTotal = 2m,
                             IsAutomaticallyCreated = true
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("5b25be13-5120-4807-979a-c4f879d547b3")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityData: new()
@@ -81,7 +84,10 @@ partial class ProjectCostCreateHandlerSource
                                 projectId: "6cd8c5b8-9628-493d-b790-bc010ed26367"),
                             HoursTotal = 4m,
                             IsAutomaticallyCreated = true
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("5b25be13-5120-4807-979a-c4f879d547b3")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityData: new()
@@ -96,7 +102,10 @@ partial class ProjectCostCreateHandlerSource
                                 projectId: "45d271f9-338c-4536-a7cc-48f497485200"),
                             HoursTotal = 6m,
                             IsAutomaticallyCreated = true
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("5b25be13-5120-4807-979a-c4f879d547b3")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityData: new()
@@ -110,6 +119,9 @@ partial class ProjectCostCreateHandlerSource
                             HoursTotal = 8m,
                             IsAutomaticallyCreated = true
                         })
+                    {
+                        CallerObjectId = new("5b25be13-5120-4807-979a-c4f879d547b3")
+                    }
                 ]
             },
             {
@@ -151,7 +163,10 @@ partial class ProjectCostCreateHandlerSource
                             Cost = 50.125m,
                             HoursTotal = 62.6m,
                             IsAutomaticallyCreated = true
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("a06e8898-ab21-48ee-8994-8786a258ed44")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityData: new()
@@ -167,6 +182,9 @@ partial class ProjectCostCreateHandlerSource
                             HoursTotal = 187.8m,
                             IsAutomaticallyCreated = true
                         })
+                    {
+                        CallerObjectId = new("a06e8898-ab21-48ee-8994-8786a258ed44")
+                    }
                 ]
             },
             {
@@ -208,7 +226,10 @@ partial class ProjectCostCreateHandlerSource
                             Cost = 45,
                             HoursTotal = 62.6m,
                             IsAutomaticallyCreated = true
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("d914519f-62bb-47b3-bb6c-3c2d21ff9a75")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityData: new()
@@ -224,6 +245,9 @@ partial class ProjectCostCreateHandlerSource
                             HoursTotal = 187.8m,
                             IsAutomaticallyCreated = true
                         })
+                    {
+                        CallerObjectId = new("d914519f-62bb-47b3-bb6c-3c2d21ff9a75")
+                    }
                 ]
             },
             {
@@ -271,7 +295,10 @@ partial class ProjectCostCreateHandlerSource
                             Cost = 36,
                             HoursTotal = 50.08m,
                             IsAutomaticallyCreated = true
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("d914519f-62bb-47b3-bb6c-3c2d21ff9a75")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityData: new()
@@ -287,6 +314,9 @@ partial class ProjectCostCreateHandlerSource
                             HoursTotal = 175.28m,
                             IsAutomaticallyCreated = true
                         })
+                    {
+                        CallerObjectId = new("d914519f-62bb-47b3-bb6c-3c2d21ff9a75")
+                    }
                 ]
             }
         };

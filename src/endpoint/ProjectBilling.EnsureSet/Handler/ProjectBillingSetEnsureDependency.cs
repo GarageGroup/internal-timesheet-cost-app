@@ -12,7 +12,7 @@ public static class ProjectBillingSetEnsureDependency
     public static Dependency<IProjectBillingSetEnsureHandler> UseProjectBillingSetEnsureHandler<TSqlApi, TDataverseApi>(
         this Dependency<TSqlApi, TDataverseApi> dependency)
         where TSqlApi : ISqlQueryEntitySetSupplier
-        where TDataverseApi : IDataverseImpersonateSupplier<IDataverseEntityCreateSupplier>
+        where TDataverseApi : IDataverseEntityCreateSupplier
     {
         ArgumentNullException.ThrowIfNull(dependency);
         return dependency.Fold<IProjectBillingSetEnsureHandler>(CreateHandler);

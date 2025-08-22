@@ -40,7 +40,7 @@ internal sealed partial class ProjectBillingSetCalculateHandler(ISqlApi sqlApi, 
 
         FlatArray<KeyValuePair<string, string>> headers =
         [
-            new("MSCRMCallerID", input.CallerUserId.ToString("D"))
+            new("CallerObjectId", input.CallerUserId.ToString("D"))
         ];
 
         var builder = FlatArray<HttpSendIn>.Builder.OfLength(billingPeriods.Length * 2);

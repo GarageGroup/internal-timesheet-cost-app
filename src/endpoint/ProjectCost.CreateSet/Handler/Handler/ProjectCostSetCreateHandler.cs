@@ -5,7 +5,7 @@ using GarageGroup.Infra;
 namespace GarageGroup.Internal.Timesheet;
 
 using ISqlApi = ISqlQueryEntitySetSupplier;
-using IDataverseApi = IDataverseImpersonateSupplier<IDataverseEntityCreateSupplier>;
+using IDataverseApi = IDataverseEntityCreateSupplier;
 
 internal sealed partial class ProjectCostSetCreateHandler(ISqlApi sqlApi, IDataverseApi dataverseApi) : IProjectCostSetCreateHandler
 {

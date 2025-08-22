@@ -44,14 +44,20 @@ partial class ProjectBillingSetEnsureHandlerSource
                         {
                             PeriodLookupValue = "/gg_employee_cost_periods(acd5446e-ca49-43f5-a8d1-e8fba22af61f)",
                             ProjectLookupValue = "/gg_projects(57970dca-2122-4e7e-87b1-d4a9e2b1ed91)"
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("c65c0458-b9d5-40a0-8db2-6292b8b93bf2")
+                    },
                     new(
                         entityPluralName: "gg_project_billing_periods",
                         entityData: new()
                         {
                             PeriodLookupValue = "/gg_employee_cost_periods(acd5446e-ca49-43f5-a8d1-e8fba22af61f)",
                             ProjectLookupValue = "/gg_projects(335e9f1e-b063-4732-822a-e9a0b5c35d6d)"
-                        }),
+                        })
+                    {
+                        CallerObjectId = new("c65c0458-b9d5-40a0-8db2-6292b8b93bf2")
+                    },
                     new(
                         entityPluralName: "gg_project_billing_periods",
                         entityData: new()
@@ -59,6 +65,9 @@ partial class ProjectBillingSetEnsureHandlerSource
                             PeriodLookupValue = "/gg_employee_cost_periods(acd5446e-ca49-43f5-a8d1-e8fba22af61f)",
                             ProjectLookupValue = "/gg_projects(a82e74de-2066-4f9c-b037-1d206fd7eebe)"
                         })
+                    {
+                        CallerObjectId = new("c65c0458-b9d5-40a0-8db2-6292b8b93bf2")
+                    }
                 ]
             }
         };

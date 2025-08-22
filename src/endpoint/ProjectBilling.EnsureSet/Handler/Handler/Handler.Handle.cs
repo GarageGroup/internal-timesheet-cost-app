@@ -59,11 +59,11 @@ partial class ProjectBillingSetEnsureHandler
         ProjectBillingPeriodModel input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input.ProjectBillingPeriod, cancellationToken)
+            input, cancellationToken)
         .Pipe(
-            ProjectBillingPeriodJson.BuildDataverseCreateInput)
+            static @in => ProjectBillingPeriodJson.BuildDataverseCreateInput(@in.ProjectBillingPeriod, @in.CallerUserId))
         .PipeValue(
-            dataverseApi.Impersonate(input.CallerUserId).CreateEntityAsync)
+            dataverseApi.CreateEntityAsync)
         .Recover(
             static failure => failure.FailureCode switch
             {

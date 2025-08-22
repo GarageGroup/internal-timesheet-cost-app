@@ -13,9 +13,7 @@ partial class ProjectBillingSetEnsureHandlerTest
     public static async Task HandleAsync_InputIsNull_ExpectFailure()
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
-
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
 
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
@@ -30,9 +28,7 @@ partial class ProjectBillingSetEnsureHandlerTest
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var input = new ProjectBillingSetEnsureIn(
@@ -106,9 +102,7 @@ partial class ProjectBillingSetEnsureHandlerTest
 
         var mockSqlApi = BuildMockSqlApi(dbFailure);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
@@ -127,9 +121,7 @@ partial class ProjectBillingSetEnsureHandlerTest
         FlatArray<DataverseEntityCreateIn<ProjectBillingPeriodJson>> expectedInputs)
     {
         var mockSqlApi = BuildMockSqlApi(dbTimesheets);
-
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
 
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
@@ -138,28 +130,8 @@ partial class ProjectBillingSetEnsureHandlerTest
 
         foreach (var expectedInput in expectedInputs)
         {
-            mockDataverseCreateApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
+            mockDataverseApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
-    }
-
-    [Theory]
-    [MemberData(
-        nameof(ProjectBillingSetEnsureHandlerSource.InputImpersonateCreateTestData),
-        MemberType = typeof(ProjectBillingSetEnsureHandlerSource))]
-    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseImpersonateCalledExactTimes(
-        ProjectBillingSetEnsureIn input, FlatArray<DbTimesheet> dbOutput, Guid expectedCallerId, int expectedImpersonateCount)
-    {
-        var mockSqlApi = BuildMockSqlApi(dbOutput);
-
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
-        var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
-
-        var cancellationToken = new CancellationToken(canceled: false);
-        _ = await handler.HandleAsync(input, cancellationToken);
-
-        mockDataverseApi.Verify(a => a.Impersonate(expectedCallerId), Times.Exactly(expectedImpersonateCount));
     }
 
     [Theory]
@@ -181,9 +153,7 @@ partial class ProjectBillingSetEnsureHandlerTest
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(sourceFailureCode, "Some failure message");
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(dataverseFailure);
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
@@ -200,9 +170,7 @@ partial class ProjectBillingSetEnsureHandlerTest
         var sourceException = new Exception("Some exception message");
         var dataverseFailure = sourceException.ToFailure(DataverseFailureCode.DuplicateRecord, "Some failure message");
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(dataverseFailure);
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
@@ -215,9 +183,7 @@ partial class ProjectBillingSetEnsureHandlerTest
     public static async Task HandleAsync_DataverseCreateResultIsSuccess_ExpectSuccess()
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet);
-
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
 
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 

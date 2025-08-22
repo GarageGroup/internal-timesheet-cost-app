@@ -14,9 +14,7 @@ partial class ProjectCostCreateHandlerTest
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(null, default);
@@ -30,9 +28,7 @@ partial class ProjectCostCreateHandlerTest
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var input = new ProjectCostSetCreateIn(
@@ -93,9 +89,7 @@ partial class ProjectCostCreateHandlerTest
 
         var mockSqlApi = BuildMockSqlApi(dbFailure, SomeDbProjectCostSet);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
@@ -109,9 +103,7 @@ partial class ProjectCostCreateHandlerTest
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var input = new ProjectCostSetCreateIn(
@@ -158,9 +150,7 @@ partial class ProjectCostCreateHandlerTest
 
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, dbFailure);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
@@ -179,9 +169,7 @@ partial class ProjectCostCreateHandlerTest
     {
         var mockSqlApi = BuildMockSqlApi(dbTimesheets, dbProjectCosts);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var cancellationToken = new CancellationToken(canceled: false);
@@ -189,26 +177,8 @@ partial class ProjectCostCreateHandlerTest
 
         foreach (var expectedInput in expectedInputs)
         {
-            mockDataverseCreateApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
+            mockDataverseApi.Verify(f => f.CreateEntityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
-    }
-
-    [Theory]
-    [MemberData(nameof(ProjectCostCreateHandlerSource.InputImpersonateCreateTestData), MemberType = typeof(ProjectCostCreateHandlerSource))]
-    internal static async Task HandleAsync_DbResultIsSuccess_ExpectDataverseImpersonateCalledExactTimes(
-        ProjectCostSetCreateIn input, FlatArray<DbTimesheet> dbOutput, Guid expectedCallerId, int expectedImpersonateCount)
-    {
-        var mockSqlApi = BuildMockSqlApi(dbOutput, SomeDbProjectCostSet);
-
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
-        var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
-
-        var cancellationToken = new CancellationToken(canceled: false);
-        _ = await handler.HandleAsync(input, cancellationToken);
-
-        mockDataverseApi.Verify(a => a.Impersonate(expectedCallerId), Times.Exactly(expectedImpersonateCount));
     }
 
     [Theory]
@@ -231,9 +201,7 @@ partial class ProjectCostCreateHandlerTest
 
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(dataverseFailure);
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
@@ -247,9 +215,7 @@ partial class ProjectCostCreateHandlerTest
     {
         var mockSqlApi = BuildMockSqlApi(SomeDbTimesheetSet, SomeDbProjectCostSet);
 
-        var mockDataverseCreateApi = BuildMockDataverseCreateApi(Result.Success<Unit>(default));
-        var mockDataverseApi = BuildMockDataverseApi(mockDataverseCreateApi.Object);
-
+        var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
         var actual = await handler.HandleAsync(SomeInput, default);
