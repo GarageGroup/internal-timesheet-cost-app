@@ -83,11 +83,11 @@ partial class ProjectCostSetCreateHandler
         EmployeeProjectCostModel input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input.Cost, cancellationToken)
+            input, cancellationToken)
         .Pipe(
-            EmployeeProjectCostJson.BuildDataverseCreateInput)
+            static @in => EmployeeProjectCostJson.BuildDataverseCreateInput(@in.Cost, @in.CallerUserId))
         .PipeValue(
-            dataverseApi.Impersonate(input.CallerUserId).CreateEntityAsync)
+            dataverseApi.CreateEntityAsync)
         .MapFailure(
             static failure => failure.MapFailureCode(MapFailureCode));
 

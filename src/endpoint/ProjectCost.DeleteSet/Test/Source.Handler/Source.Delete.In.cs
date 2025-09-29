@@ -32,10 +32,16 @@ partial class ProjectCostDeleteHandlerSource
                 [
                     new(
                         entityPluralName: "gg_employee_project_costs",
-                        entityKey: new DataversePrimaryKey(new("98afb8da-f195-4736-a72f-7b61b268624e"))),
+                        entityKey: new DataversePrimaryKey(new("98afb8da-f195-4736-a72f-7b61b268624e")))
+                    {
+                        CallerObjectId = new("b01c0c4b-484d-4af9-9b62-ed40c2eeb26c")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityKey: new DataversePrimaryKey(new("7acffba8-7caa-4c7e-86c6-874ec9550849")))
+                    {
+                        CallerObjectId = new("b01c0c4b-484d-4af9-9b62-ed40c2eeb26c")
+                    }
                 ]
             },
             {
@@ -59,10 +65,16 @@ partial class ProjectCostDeleteHandlerSource
                 [
                     new(
                         entityPluralName: "gg_employee_project_costs",
-                        entityKey: new DataversePrimaryKey(new("98afb8da-f195-4736-a72f-7b61b268624e"))),
+                        entityKey: new DataversePrimaryKey(new("98afb8da-f195-4736-a72f-7b61b268624e")))
+                    {
+                        CallerObjectId = new("02db1d32-bf73-4b1b-8c1d-fc69606f50cf")
+                    },
                     new(
                         entityPluralName: "gg_employee_project_costs",
                         entityKey: new DataversePrimaryKey(new("7acffba8-7caa-4c7e-86c6-874ec9550849")))
+                    {
+                        CallerObjectId = new("02db1d32-bf73-4b1b-8c1d-fc69606f50cf")
+                    }
                 ]
             }
         };

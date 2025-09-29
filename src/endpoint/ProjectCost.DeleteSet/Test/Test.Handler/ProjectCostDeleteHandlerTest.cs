@@ -35,8 +35,6 @@ public static partial class ProjectCostDeleteHandlerTest
     {
         var mock = new Mock<IDataverseApiClient>();
 
-        _ = mock.Setup(static a => a.Impersonate(It.IsAny<Guid>())).Returns(mock.Object);
-
         _ = mock
             .Setup(static a => a.GetEntitySetAsync<TOut>(It.IsAny<DataverseEntitySetGetIn>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(setGetResult);

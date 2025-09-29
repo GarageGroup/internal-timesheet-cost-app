@@ -13,9 +13,12 @@ partial class ProjectCostSetDeleteHandler
         AsyncPipeline.Pipe(
            input, cancellationToken)
         .Pipe(
-           static @in => EmployeeProjectCostJson.BuildDataverseSetGetInput(@in.CostPeriodId, @in.MaxItems))
+           static @in => EmployeeProjectCostJson.BuildDataverseSetGetInput(
+            periodId: @in.CostPeriodId,
+            maxPageSize: @in.MaxItems,
+            callerUserId: @in.CallerUserId))
         .PipeValue(
-           dataverseApi.Impersonate(input.CallerUserId).GetEntitySetAsync<EmployeeProjectCostJson>)
+           dataverseApi.GetEntitySetAsync<EmployeeProjectCostJson>)
         .Map(
             costs => new EmployeeProjectCostModel
             {
@@ -45,11 +48,13 @@ partial class ProjectCostSetDeleteHandler
         DeleteEmployeeProjectCostModel input, CancellationToken cancellationToken)
         =>
         AsyncPipeline.Pipe(
-            input.EmployeeProjectCostId, cancellationToken)
+            input, cancellationToken)
         .Pipe(
-            EmployeeProjectCostJson.BuildDataverseDeleteInput)
+            static @in => EmployeeProjectCostJson.BuildDataverseDeleteInput(
+                id: @in.EmployeeProjectCostId,
+                callerUserId: @in.CallerUserId))
         .PipeValue(
-            dataverseApi.Impersonate(input.CallerUserId).DeleteEntityAsync)
+            dataverseApi.DeleteEntityAsync)
         .MapFailure(
             static failure => failure.MapFailureCode(MapFailureCode));
 }

@@ -9,23 +9,6 @@ namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Tes
 
 partial class ProjectCostDeleteHandlerTest
 {
-    [Theory]
-    [MemberData(nameof(ProjectCostDeleteHandlerSource.InputImpersonateDeleteTestData), MemberType = typeof(ProjectCostDeleteHandlerSource))]
-    internal static async Task HandleAsync_ExpectDataverseImpersonateCalledExactTimes(
-        ProjectCostSetDeleteIn input,
-        DataverseEntitySetGetOut<EmployeeProjectCostJson> dataverseSetGetOutput,
-        Guid expectedCallerId,
-        int expectedImpersonateCount)
-    {
-        var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOutput, Result.Success<Unit>(default));
-        var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
-
-        var cancellationToken = new CancellationToken(canceled: false);
-        _ = await handler.HandleAsync(input, cancellationToken);
-
-        mockDataverseApi.Verify(f => f.Impersonate(expectedCallerId), Times.Exactly(expectedImpersonateCount));
-    }
-
     [Fact]
     public static async Task HandleAsync_ExpectDataverseGetSetCalledOnce()
     {
@@ -44,9 +27,10 @@ partial class ProjectCostDeleteHandlerTest
         var expectedInput = new DataverseEntitySetGetIn(
             entityPluralName: "gg_employee_project_costs",
             selectFields: ["gg_employee_project_costid"],
-            filter: "_gg_period_id_value eq '80738293-e49b-4c3f-966d-52afc9964da2' and createdonbehalfby ne null")
+            filter: "_gg_period_id_value eq '80738293-e49b-4c3f-966d-52afc9964da2' and gg_createdmethod_is eq true")
         {
-            MaxPageSize = 10
+            MaxPageSize = 10,
+            CallerObjectId = new("9cdd9452-6872-4798-ad3b-6b9819d9d577")
         };
 
         mockDataverseApi.Verify(f => f.GetEntitySetAsync<EmployeeProjectCostJson>(expectedInput, cancellationToken), Times.Once);

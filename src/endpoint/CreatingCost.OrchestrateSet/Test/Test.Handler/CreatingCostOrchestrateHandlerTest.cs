@@ -41,7 +41,9 @@ public static partial class CreatingCostOrchestrateHandlerTest
     private static Mock<IOrchestrationActivityApi> BuildMockOrchestration(
         in Result<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>, Failure<HandlerFailureCode>> deleteResult,
         in Result<OrchestrationActivityCallOut<EmployeeCostSetGetOut>, Failure<HandlerFailureCode>> setGetResult,
-        in Result<Unit, Failure<HandlerFailureCode>> createResult)
+        in Result<Unit, Failure<HandlerFailureCode>> billingSetEnsureResult,
+        in Result<Unit, Failure<HandlerFailureCode>> createResult,
+        in Result<Unit, Failure<HandlerFailureCode>> billingSetCalculateResult)
     {
         var mock = new Mock<IOrchestrationActivityApi>();
 
@@ -60,8 +62,20 @@ public static partial class CreatingCostOrchestrateHandlerTest
         _ = mock
             .Setup(
                 static a => a.CallActivityAsync(
+                    It.IsAny<OrchestrationActivityCallIn<ProjectBillingSetEnsureIn>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(billingSetEnsureResult);
+
+        _ = mock
+            .Setup(
+                static a => a.CallActivityAsync(
                     It.IsAny<OrchestrationActivityCallIn<ProjectCostSetCreateIn>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(createResult);
+
+        _ = mock
+            .Setup(
+                static a => a.CallActivityAsync(
+                    It.IsAny<OrchestrationActivityCallIn<ProjectBillingSetCalculateIn>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(billingSetCalculateResult);
 
         return mock;
     }
@@ -89,7 +103,19 @@ public static partial class CreatingCostOrchestrateHandlerTest
         _ = mock
             .Setup(
                 static a => a.CallActivityAsync(
+                    It.IsAny<OrchestrationActivityCallIn<ProjectBillingSetEnsureIn>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success<Unit>(default));
+
+        _ = mock
+            .Setup(
+                static a => a.CallActivityAsync(
                     It.IsAny<OrchestrationActivityCallIn<ProjectCostSetCreateIn>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success<Unit>(default));
+
+        _ = mock
+            .Setup(
+                static a => a.CallActivityAsync(
+                    It.IsAny<OrchestrationActivityCallIn<ProjectBillingSetCalculateIn>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success<Unit>(default));
 
         return mock;

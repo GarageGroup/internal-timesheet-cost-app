@@ -14,6 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Contract\Contract.csproj" />
     <ProjectReference Include="..\..\EmployeeCost.GetSet\Contract\Contract.csproj" />
+    <ProjectReference Include="..\..\ProjectBilling.CalculateSet\Contract\Contract.csproj" />
+    <ProjectReference Include="..\..\ProjectBilling.EnsureSet\Contract\Contract.csproj" />
     <ProjectReference Include="..\..\ProjectCost.CreateSet\Contract\Contract.csproj" />
     <ProjectReference Include="..\..\ProjectCost.DeleteSet\Contract\Contract.csproj" />
   </ItemGroup>

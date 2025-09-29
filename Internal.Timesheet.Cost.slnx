@@ -23,6 +23,16 @@
     <Project Path="src/endpoint/EmployeeCost.GetSet/Handler/Handler.csproj" />
     <Project Path="src/endpoint/EmployeeCost.GetSet/Test/Test.csproj" />
   </Folder>
+  <Folder Name="/endpoint/ProjectBilling.CalculateSet/">
+    <Project Path="src/endpoint/ProjectBilling.CalculateSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/ProjectBilling.CalculateSet/Handler/Handler.csproj" />
+    <Project Path="src/endpoint/ProjectBilling.CalculateSet/Test/Test.csproj" />
+  </Folder>
+  <Folder Name="/endpoint/ProjectBilling.EnsureSet/">
+    <Project Path="src/endpoint/ProjectBilling.EnsureSet/Contract/Contract.csproj" />
+    <Project Path="src/endpoint/ProjectBilling.EnsureSet/Handler/Handler.csproj" />
+    <Project Path="src/endpoint/ProjectBilling.EnsureSet/Test/Test.csproj" />
+  </Folder>
   <Folder Name="/endpoint/ProjectCost.CreateSet/">
     <Project Path="src/endpoint/ProjectCost.CreateSet/Contract/Contract.csproj" />
     <Project Path="src/endpoint/ProjectCost.CreateSet/Handler/Handler.csproj" />

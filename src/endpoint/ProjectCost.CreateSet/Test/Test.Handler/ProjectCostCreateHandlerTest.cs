@@ -61,7 +61,7 @@ public static partial class ProjectCostCreateHandlerTest
         return mock;
     }
 
-    private static Mock<IDataverseEntityCreateSupplier> BuildMockDataverseCreateApi(
+    private static Mock<IDataverseEntityCreateSupplier> BuildMockDataverseApi(
         in Result<Unit, Failure<DataverseFailureCode>> result)
     {
         var mock = new Mock<IDataverseEntityCreateSupplier>();
@@ -71,16 +71,6 @@ public static partial class ProjectCostCreateHandlerTest
                 static a => a.CreateEntityAsync(
                     It.IsAny<DataverseEntityCreateIn<EmployeeProjectCostJson>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
-
-        return mock;
-    }
-
-    private static Mock<IDataverseImpersonateSupplier<IDataverseEntityCreateSupplier>> BuildMockDataverseApi(
-        IDataverseEntityCreateSupplier dataverseCreateSupplier)
-    {
-        var mock = new Mock<IDataverseImpersonateSupplier<IDataverseEntityCreateSupplier>>();
-
-        _ = mock.Setup(static a => a.Impersonate(It.IsAny<Guid>())).Returns(dataverseCreateSupplier);
 
         return mock;
     }

@@ -1,0 +1,3 @@
+namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectBilling.CalculateSet.Test;
+
+internal static partial class ProjectBillingSetCalculateHandlerSource;
