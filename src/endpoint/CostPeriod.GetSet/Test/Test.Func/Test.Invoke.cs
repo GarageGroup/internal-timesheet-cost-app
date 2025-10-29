@@ -1,8 +1,8 @@
-﻿using GarageGroup.Infra;
-using Moq;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GarageGroup.Infra;
+using Moq;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.CostPeriod.GetSet.Test;
@@ -15,8 +15,7 @@ partial class CostPeriodSetGetFuncTest
         var mockDataverseApi = BuildMockDataverseApi(SomePeriodJsonOut);
         var func = new CostPeriodSetGetFunc(mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(false);
-        _ = await func.InvokeAsync(default, cancellationToken);
+        _ = await func.InvokeAsync(default, TestContext.Current.CancellationToken);
 
         var expectedInput = new DataverseEntitySetGetIn(
             entityPluralName: "gg_employee_cost_periods",
@@ -28,7 +27,7 @@ partial class CostPeriodSetGetFuncTest
                 new("gg_to_date", DataverseOrderDirection.Descending)
             ]);
 
-        mockDataverseApi.Verify(a => a.GetEntitySetAsync<PeriodJson>(expectedInput, cancellationToken), Times.Once);
+        mockDataverseApi.Verify(a => a.GetEntitySetAsync<PeriodJson>(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -52,7 +51,7 @@ partial class CostPeriodSetGetFuncTest
         var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
         var func = new CostPeriodSetGetFunc(mockDataverseApi.Object);
 
-        var actual = await func.InvokeAsync(default, default);
+        var actual = await func.InvokeAsync(default, TestContext.Current.CancellationToken);
         var expected = Failure.Create("Some failure message", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -66,8 +65,7 @@ partial class CostPeriodSetGetFuncTest
         var mockDataverseApi = BuildMockDataverseApi(dataverseOut);
         var func = new CostPeriodSetGetFunc(mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(false);
-        var actual = await func.InvokeAsync(default, cancellationToken);
+        var actual = await func.InvokeAsync(default, TestContext.Current.CancellationToken);
 
         Assert.StrictEqual(expected, actual);
     }

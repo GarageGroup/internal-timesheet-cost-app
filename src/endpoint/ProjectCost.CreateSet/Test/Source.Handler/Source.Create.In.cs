@@ -1,14 +1,16 @@
-﻿using GarageGroup.Infra;
-using System;
+﻿using System;
+using GarageGroup.Infra;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.CreateSet.Test;
 
 using CostCreateIn = DataverseEntityCreateIn<EmployeeProjectCostJson>;
+using DbProjectCostArray = FlatArray<DbProjectCost>;
+using DbTimesheetArray = FlatArray<DbTimesheet>;
 
 partial class ProjectCostCreateHandlerSource
 {
-    public static TheoryData<ProjectCostSetCreateIn, FlatArray<DbTimesheet>, FlatArray<DbProjectCost>, FlatArray<CostCreateIn>> InputCreateTestData
+    public static TheoryData<ProjectCostSetCreateIn, DbTimesheetArray, DbProjectCostArray, FlatArray<CostCreateIn>> InputCreateTestData
         =>
         new()
         {

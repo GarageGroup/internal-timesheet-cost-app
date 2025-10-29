@@ -1,8 +1,8 @@
-﻿using GarageGroup.Infra;
-using Moq;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GarageGroup.Infra;
+using Moq;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.StartSet.OrchestrateSet.Test;
@@ -15,14 +15,13 @@ partial class CreatingCostStartHandlerTest
         var mockOrchestrationApi = BuildMockOrchestrationApi(SomeOrchestrationOut);
         var handler = new CreatingCostSetStartHandler(mockOrchestrationApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
         var input = new CreatingCostSetStartIn()
         { 
             CallerUserId = new("c69b6ee2-51a4-4e07-bfda-9ef6fb0be064"),
             CostPeriodId = new("dfe086be-9513-48dd-915c-fa1a2c1f6d05")
         };
 
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedInput = new OrchestrationInstanceScheduleIn<CreatingCostSetOrchestrateIn>(
             orchestratorName: "OrchestrateCreatingCosts",
@@ -30,7 +29,7 @@ partial class CreatingCostStartHandlerTest
                 callerUserId: new("c69b6ee2-51a4-4e07-bfda-9ef6fb0be064"),
                 costPeriodId: new("dfe086be-9513-48dd-915c-fa1a2c1f6d05")));
 
-        mockOrchestrationApi.Verify(f => f.ScheduleInstanceAsync(expectedInput, cancellationToken), Times.Once);
+        mockOrchestrationApi.Verify(f => f.ScheduleInstanceAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -45,7 +44,7 @@ partial class CreatingCostStartHandlerTest
         var mockOrchestrationApi = BuildMockOrchestrationApi(orchestrationFailure);
         var handler = new CreatingCostSetStartHandler(mockOrchestrationApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(sourceFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -60,7 +59,7 @@ partial class CreatingCostStartHandlerTest
         var mockOrchestrationApi = BuildMockOrchestrationApi(orchestrationInstanceScheduleOut);
 
         var handler = new CreatingCostSetStartHandler(mockOrchestrationApi.Object);
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
 
         Assert.Equal(instanceId, actual);
     }

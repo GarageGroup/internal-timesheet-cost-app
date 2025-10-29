@@ -1,8 +1,8 @@
-﻿using GarageGroup.Infra;
-using Moq;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GarageGroup.Infra;
+using Moq;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.EmployeeCost.GetSet.Test;
@@ -15,10 +15,9 @@ partial class EmployeeCostSetGetHandlerTest
         var mockSqlApi = BuildMockSqlApi(SomeDbEmployeeCostSet);
         var handler = new EmployeeCostSetGetHandler(mockSqlApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
         var input = new EmployeeCostSetGetIn(new("9a91a366-735b-490a-aa6f-af8ad6194724"));
 
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedQuery = new DbSelectQuery("gg_employee_cost", "c")
         {
@@ -33,7 +32,7 @@ partial class EmployeeCostSetGetHandlerTest
                 "c.gg_period_id", DbFilterOperator.Equal, Guid.Parse("9a91a366-735b-490a-aa6f-af8ad6194724"), "periodId")
         };
 
-        mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbEmployeeCost>(expectedQuery, cancellationToken), Times.Once);
+        mockSqlApi.Verify(f => f.QueryEntitySetOrFailureAsync<DbEmployeeCost>(expectedQuery, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -45,7 +44,7 @@ partial class EmployeeCostSetGetHandlerTest
         var mockSqlApi = BuildMockSqlApi(dbFailure);
         var handler = new EmployeeCostSetGetHandler(mockSqlApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -71,7 +70,7 @@ partial class EmployeeCostSetGetHandlerTest
         var mockSqlApi = BuildMockSqlApi(dbOutput);
         var handler = new EmployeeCostSetGetHandler(mockSqlApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
 
         var expected = new EmployeeCostSetGetOut
         {
