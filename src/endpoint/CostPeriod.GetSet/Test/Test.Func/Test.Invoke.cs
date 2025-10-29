@@ -20,7 +20,7 @@ partial class CostPeriodSetGetFuncTest
         var expectedInput = new DataverseEntitySetGetIn(
             entityPluralName: "gg_employee_cost_periods",
             selectFields: ["gg_employee_cost_periodid", "gg_name", "gg_from_date", "gg_to_date"],
-            filter: default,
+            filter: "statecode eq 0",
             expandFields: default,
             orderBy:
             [
