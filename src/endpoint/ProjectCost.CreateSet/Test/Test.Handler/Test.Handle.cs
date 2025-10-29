@@ -1,8 +1,8 @@
-﻿using GarageGroup.Infra;
-using Moq;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GarageGroup.Infra;
+using Moq;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.CreateSet.Test;
@@ -17,7 +17,7 @@ partial class ProjectCostCreateHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(null, default);
+        var actual = await handler.HandleAsync(null, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Persistent, "Input must be not null.");
 
         Assert.Equal(expected, actual);
@@ -37,7 +37,7 @@ partial class ProjectCostCreateHandlerTest
             callerUserId: new("5b25be13-5120-4807-979a-c4f879d547b3"),
             employeeCost: 2121);
 
-        _ = await handler.HandleAsync(input, default);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedQuery = new DbSelectQuery("gg_timesheetactivity", "t")
         {
@@ -92,7 +92,7 @@ partial class ProjectCostCreateHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -112,7 +112,7 @@ partial class ProjectCostCreateHandlerTest
             callerUserId: new("8831be32-14bc-4f7c-b572-cd3224d7d5f2"),
             employeeCost: 3300);
 
-        _ = await handler.HandleAsync(input, default);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedQuery = new DbSelectQuery("gg_employee_project_cost", "c")
         {
@@ -153,7 +153,7 @@ partial class ProjectCostCreateHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure message", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -172,8 +172,7 @@ partial class ProjectCostCreateHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         foreach (var expectedInput in expectedInputs)
         {
@@ -193,6 +192,8 @@ partial class ProjectCostCreateHandlerTest
     [InlineData(DataverseFailureCode.DuplicateRecord, HandlerFailureCode.Transient)]
     [InlineData(DataverseFailureCode.InvalidPayload, HandlerFailureCode.Transient)]
     [InlineData(DataverseFailureCode.InvalidFileSize, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.IsvAborted, HandlerFailureCode.Transient)]
+    [InlineData(DataverseFailureCode.CannotUpdateBecauseItIsReadOnly, HandlerFailureCode.Transient)]
     public static async Task HandleAsync_DataverseCreateResultIsFailure_ExpectFailure(
         DataverseFailureCode sourceFailureCode, HandlerFailureCode expectedFailureCode)
     {
@@ -204,7 +205,7 @@ partial class ProjectCostCreateHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(expectedFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -218,7 +219,7 @@ partial class ProjectCostCreateHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectCostSetCreateHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Result.Success<Unit>(default);
 
         Assert.Equal(expected, actual);

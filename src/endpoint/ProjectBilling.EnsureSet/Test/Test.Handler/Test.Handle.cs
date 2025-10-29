@@ -17,7 +17,7 @@ partial class ProjectBillingSetEnsureHandlerTest
 
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(null, default);
+        var actual = await handler.HandleAsync(null, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Persistent, "Input must be not null.");
 
         Assert.Equal(expected, actual);
@@ -35,7 +35,7 @@ partial class ProjectBillingSetEnsureHandlerTest
             callerUserId: new("4c184b5a-dcef-4dca-a7f0-c628c26509f9"),
             billingPeriodId: new("65f588f2-d40c-49b9-9d8a-229614cc1a12"));
 
-        _ = await handler.HandleAsync(input, default);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedQuery = new DbSelectQuery("gg_timesheetactivity", "t")
         {
@@ -105,7 +105,7 @@ partial class ProjectBillingSetEnsureHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(Result.Success<Unit>(default));
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure text.", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -125,8 +125,7 @@ partial class ProjectBillingSetEnsureHandlerTest
 
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         foreach (var expectedInput in expectedInputs)
         {
@@ -156,7 +155,7 @@ partial class ProjectBillingSetEnsureHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(expectedFailureCode, "Some failure message", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -173,7 +172,7 @@ partial class ProjectBillingSetEnsureHandlerTest
         var mockDataverseApi = BuildMockDataverseApi(dataverseFailure);
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Result.Success<Unit>(default);
 
         Assert.Equal(expected, actual);
@@ -187,7 +186,7 @@ partial class ProjectBillingSetEnsureHandlerTest
 
         var handler = new ProjectBillingSetEnsureHandler(mockSqlApi.Object, mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Result.Success<Unit>(default);
 
         Assert.Equal(expected, actual);

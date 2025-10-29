@@ -1,8 +1,8 @@
-﻿using GarageGroup.Infra;
-using Moq;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GarageGroup.Infra;
+using Moq;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.ProjectCost.DeleteSet.Test;
@@ -16,13 +16,12 @@ partial class ProjectCostDeleteHandlerTest
 
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
         var input = new ProjectCostSetDeleteIn(
             callerUserId: new("9cdd9452-6872-4798-ad3b-6b9819d9d577"),
             costPeriodId: new("80738293-e49b-4c3f-966d-52afc9964da2"),
             maxItems: 10);
 
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedInput = new DataverseEntitySetGetIn(
             entityPluralName: "gg_employee_project_costs",
@@ -33,7 +32,8 @@ partial class ProjectCostDeleteHandlerTest
             CallerObjectId = new("9cdd9452-6872-4798-ad3b-6b9819d9d577")
         };
 
-        mockDataverseApi.Verify(f => f.GetEntitySetAsync<EmployeeProjectCostJson>(expectedInput, cancellationToken), Times.Once);
+        mockDataverseApi.Verify(
+            f => f.GetEntitySetAsync<EmployeeProjectCostJson>(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -57,7 +57,7 @@ partial class ProjectCostDeleteHandlerTest
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseFailure, Result.Success<Unit>(default));
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(expectedFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -73,8 +73,7 @@ partial class ProjectCostDeleteHandlerTest
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOut, Result.Success<Unit>(default));
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        var actual = await handler.HandleAsync(input, cancellationToken);
+        var actual = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         foreach (var expectedInput in expectedInputs)
         {
@@ -103,7 +102,7 @@ partial class ProjectCostDeleteHandlerTest
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(SomeEmployeeProjectCostJsonOut, dataverseFailure);
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(expectedFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -117,7 +116,7 @@ partial class ProjectCostDeleteHandlerTest
         var mockDataverseApi = BuildMockDataverseApi<EmployeeProjectCostJson>(dataverseSetGetOut, Result.Success<Unit>(default));
         var handler = new ProjectCostSetDeleteHandler(mockDataverseApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
 
         Assert.StrictEqual(expected, actual);
     }

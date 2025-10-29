@@ -1,8 +1,8 @@
-﻿using GarageGroup.Infra;
-using Moq;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GarageGroup.Infra;
+using Moq;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateSet.Test;
@@ -10,7 +10,9 @@ namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateS
 partial class CreatingCostOrchestrateHandlerTest
 {
     [Theory]
-    [MemberData(nameof(CreatingCostOrchestrateHandlerSource.InputDeleteSuccessTestData), MemberType = typeof(CreatingCostOrchestrateHandlerSource))]
+    [MemberData(
+        nameof(CreatingCostOrchestrateHandlerSource.InputDeleteSuccessTestData),
+        MemberType = typeof(CreatingCostOrchestrateHandlerSource))]
     internal static async Task HandleAsync_ExpectOrchestrationDeleteCalledExactTimes(
         CreatingCostSetOrchestrateIn input,
         OrchestrationActivityCallIn<ProjectCostSetDeleteIn> expectedInput,
@@ -19,11 +21,10 @@ partial class CreatingCostOrchestrateHandlerTest
         var mockOrchestration = BuildMockOrchestrationForDeleteTest(orchestrationOut.Map(AsSuccess));
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         mockOrchestration.Verify(
-            f => f.CallActivityAsync<ProjectCostSetDeleteIn, ProjectCostSetDeleteOut>(expectedInput, cancellationToken),
+            f => f.CallActivityAsync<ProjectCostSetDeleteIn, ProjectCostSetDeleteOut>(expectedInput, It.IsAny<CancellationToken>()),
             Times.Exactly(orchestrationOut.Length));
 
         static Result<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>, Failure<HandlerFailureCode>> AsSuccess(
@@ -33,7 +34,9 @@ partial class CreatingCostOrchestrateHandlerTest
     }
 
     [Theory]
-    [MemberData(nameof(CreatingCostOrchestrateHandlerSource.InputDeleteFailureTestData), MemberType = typeof(CreatingCostOrchestrateHandlerSource))]
+    [MemberData(
+        nameof(CreatingCostOrchestrateHandlerSource.InputDeleteFailureTestData),
+        MemberType = typeof(CreatingCostOrchestrateHandlerSource))]
     public static async Task HandleAsync_OrchestrationDeleteResultIsFailure_ExpectFailure(
         FlatArray<Result<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>, Failure<HandlerFailureCode>>> orchestrationOut,
         Failure<HandlerFailureCode> expected)
@@ -41,8 +44,7 @@ partial class CreatingCostOrchestrateHandlerTest
         var mockOrchestration = BuildMockOrchestrationForDeleteTest(orchestrationOut);
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
 
         Assert.StrictEqual(expected, actual);
     }
@@ -55,12 +57,11 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
         var input = new CreatingCostSetOrchestrateIn(
             callerUserId: new("42a356f2-30a3-4dec-ae71-155f104f605f"),
             costPeriodId: new("a0d3fd2f-fa3a-47cb-9b43-03c95acbf798"));
 
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedInput = new OrchestrationActivityCallIn<ProjectBillingSetEnsureIn>(
             activityName: "EnsureProjectBillingPeriods",
@@ -68,7 +69,7 @@ partial class CreatingCostOrchestrateHandlerTest
                 callerUserId: new("42a356f2-30a3-4dec-ae71-155f104f605f"),
                 billingPeriodId: new("a0d3fd2f-fa3a-47cb-9b43-03c95acbf798")));
 
-        mockOrchestration.Verify(f => f.CallActivityAsync(expectedInput, cancellationToken), Times.Once);
+        mockOrchestration.Verify(f => f.CallActivityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -85,8 +86,7 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(sourceFailureCode, "Some failure message.", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -100,19 +100,18 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
         var input = new CreatingCostSetOrchestrateIn(
             callerUserId: new("04fa2155-d364-4e9c-9154-9c9b9f57f5fd"),
             costPeriodId: new("dfe086be-9513-48dd-915c-fa1a2c1f6d05"));
 
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedInput = new OrchestrationActivityCallIn<EmployeeCostSetGetIn>(
             activityName: "GetEmployeeCosts",
             value: new(new("dfe086be-9513-48dd-915c-fa1a2c1f6d05")));
 
         mockOrchestration.Verify(
-            f => f.CallActivityAsync<EmployeeCostSetGetIn, EmployeeCostSetGetOut>(expectedInput, cancellationToken),
+            f => f.CallActivityAsync<EmployeeCostSetGetIn, EmployeeCostSetGetOut>(expectedInput, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -130,8 +129,7 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(sourceFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -149,12 +147,11 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         foreach (var expectedInput in expectedInputs)
         {
-            mockOrchestration.Verify(f => f.CallActivityAsync(expectedInput, cancellationToken), Times.Once);
+            mockOrchestration.Verify(f => f.CallActivityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 
@@ -172,9 +169,7 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(sourceFailureCode, "Some failure text", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -188,13 +183,11 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-
         var input = new CreatingCostSetOrchestrateIn(
             callerUserId: new("b6212c66-1328-4438-a40f-3e00936cb822"),
             costPeriodId: new("1763fc8b-3686-455a-876d-1ee6988c950f"));
 
-        _ = await handler.HandleAsync(input, cancellationToken);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedInput = new OrchestrationActivityCallIn<ProjectBillingSetCalculateIn>(
             activityName: "CalculateProjectBillingPeriods",
@@ -202,7 +195,7 @@ partial class CreatingCostOrchestrateHandlerTest
                 callerUserId: new("b6212c66-1328-4438-a40f-3e00936cb822"),
                 billingPeriodId: new("1763fc8b-3686-455a-876d-1ee6988c950f")));
 
-        mockOrchestration.Verify(f => f.CallActivityAsync(expectedInput, cancellationToken), Times.Once);
+        mockOrchestration.Verify(f => f.CallActivityAsync(expectedInput, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -219,9 +212,7 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(sourceFailureCode, "Some failure message.", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -235,9 +226,7 @@ partial class CreatingCostOrchestrateHandlerTest
 
         var handler = new CreatingCostSetOrchestrateHandler(mockOrchestration.Object);
 
-        var cancellationToken = new CancellationToken(canceled: false);
-
-        var actual = await handler.HandleAsync(SomeInput, cancellationToken);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Result.Success<Unit>(default);
         
         Assert.StrictEqual(expected, actual);

@@ -21,7 +21,7 @@ internal sealed record class PeriodJson
         new(
             entityPluralName: EntityPluralName,
             selectFields: [IdFieldName, NameFieldName, FromDateFieldName, ToDateFieldName],
-            filter: default,
+            filter: "statecode eq 0",
             expandFields: default,
             orderBy:
             [

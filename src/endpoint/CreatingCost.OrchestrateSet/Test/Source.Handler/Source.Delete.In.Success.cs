@@ -1,15 +1,15 @@
-﻿using GarageGroup.Infra;
-using System;
+﻿using System;
+using GarageGroup.Infra;
 using Xunit;
 
 namespace GarageGroup.Internal.Timesheet.Cost.Endpoint.CreatingCost.OrchestrateSet.Test;
 
 using CostSetDeleteActivityIn = OrchestrationActivityCallIn<ProjectCostSetDeleteIn>;
-using CostSetDeleteActivityOut = OrchestrationActivityCallOut<ProjectCostSetDeleteOut>;
+using CostSetDeleteActivityOutArray = FlatArray<OrchestrationActivityCallOut<ProjectCostSetDeleteOut>>;
 
 partial class CreatingCostOrchestrateHandlerSource
 {
-    public static TheoryData<CreatingCostSetOrchestrateIn, CostSetDeleteActivityIn, FlatArray<CostSetDeleteActivityOut>> InputDeleteSuccessTestData
+    public static TheoryData<CreatingCostSetOrchestrateIn, CostSetDeleteActivityIn, CostSetDeleteActivityOutArray> InputDeleteSuccessTestData
         =>
         new()
         {

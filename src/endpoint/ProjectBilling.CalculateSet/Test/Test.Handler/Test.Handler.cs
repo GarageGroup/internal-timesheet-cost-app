@@ -17,7 +17,7 @@ partial class ProjectBillingSetCalculateHandlerTest
 
         var handler = new ProjectBillingSetCalculateHandler(mockSqlApi.Object, mockHttpApi.Object);
 
-        var actual = await handler.HandleAsync(null, default);
+        var actual = await handler.HandleAsync(null, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Persistent, "Input must be not null.");
 
         Assert.Equal(expected, actual);
@@ -35,7 +35,7 @@ partial class ProjectBillingSetCalculateHandlerTest
             callerUserId: new("55763139-f2e7-4e16-abba-39710f7f2f44"),
             billingPeriodId: new("8f9cc40a-a268-434e-a9ac-0fe1be948768"));
 
-        _ = await handler.HandleAsync(input, default);
+        _ = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         var expectedQuery = new DbSelectQuery("gg_project_billing_period", "p")
         {
@@ -63,7 +63,7 @@ partial class ProjectBillingSetCalculateHandlerTest
         var mockHttpApi = BuildMockHttpApi(SomeHttpSuccessOutput);
         var handler = new ProjectBillingSetCalculateHandler(mockSqlApi.Object, mockHttpApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Failure.Create(HandlerFailureCode.Transient, "Some failure message.", sourceException);
 
         Assert.StrictEqual(expected, actual);
@@ -75,7 +75,7 @@ partial class ProjectBillingSetCalculateHandlerTest
         var mockSqlApi = BuildMockSqlApi(default(FlatArray<DbProjectBillingPeriod>));
         var handler = new ProjectBillingSetCalculateHandler(mockSqlApi.Object, Mock.Of<IHttpApi>());
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Result.Success<Unit>(default);
 
         Assert.StrictEqual(expected, actual);
@@ -105,7 +105,7 @@ partial class ProjectBillingSetCalculateHandlerTest
             callerUserId: new("e9a16ea1-e5e2-4100-8836-cfdbf84c2a2c"),
             billingPeriodId: new("63b1b442-e37c-4f08-aad6-e911c6b75b80"));
 
-        var actual = await handler.HandleAsync(input, default);
+        var actual = await handler.HandleAsync(input, TestContext.Current.CancellationToken);
 
         FlatArray<HttpSendIn> expectedHttpInputs =
         [
@@ -167,7 +167,7 @@ partial class ProjectBillingSetCalculateHandlerTest
 
         var handler = new ProjectBillingSetCalculateHandler(mockSqlApi.Object, mockHttpApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
 
         Assert.StrictEqual(expected, actual);
     }
@@ -188,7 +188,7 @@ partial class ProjectBillingSetCalculateHandlerTest
 
         var handler = new ProjectBillingSetCalculateHandler(mockSqlApi.Object, mockHttpApi.Object);
 
-        var actual = await handler.HandleAsync(SomeInput, default);
+        var actual = await handler.HandleAsync(SomeInput, TestContext.Current.CancellationToken);
         var expected = Result.Success<Unit>(default);
 
         Assert.StrictEqual(expected, actual);
